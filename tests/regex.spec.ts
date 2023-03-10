@@ -1,4 +1,4 @@
-import { REGEX } from "../src";
+import { REGEX } from "../src/index";
 
 type Fixture = {
   input: string;
