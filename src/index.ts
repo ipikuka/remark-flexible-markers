@@ -41,7 +41,7 @@ const dictionary: Dictionary = {
   d: "brown",
   e: undefined,
   f: "fuchsia",
-  g: "gray",
+  g: "green",
   h: "hotpink",
   i: undefined,
   j: undefined,
@@ -58,7 +58,7 @@ const dictionary: Dictionary = {
   u: undefined,
   v: "violet",
   w: "white",
-  x: undefined,
+  x: "gray",
   y: "yellow",
   z: "black",
 };

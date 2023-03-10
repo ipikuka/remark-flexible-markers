@@ -89,7 +89,7 @@ Without `remark-flexible-markers`, you’d get:
   d: "brown",
   e: undefined,
   f: "fuchsia",
-  g: "gray",
+  g: "green",
   h: "hotpink",
   i: undefined,
   j: undefined,
@@ -106,7 +106,7 @@ Without `remark-flexible-markers`, you’d get:
   u: undefined,
   v: "violet",
   w: "white",
-  x: undefined,
+  x: "gray",
   y: "yellow",
   z: "black",
 };
@@ -173,7 +173,7 @@ is going to produce as default:
 ```javascript
 use(remarkFlexibleMarkers, {
   dictionary: {
-    b: "brother",
+    r: "rain",
   },
   markerClassName: "custom-marker",
   markerTagName: "span",
@@ -189,12 +189,12 @@ is going to produce:
 
 ```html
 <p>Here is <span class="custom-marker custom-marker-default">marked content</span></p>
-<p>Here is <span class="custom-marker custom-marker-red" data-color="red">marked content with red classification</span></p>
+<p>Here is <span class="custom-marker custom-marker-rain" data-color="rain">marked content with red classification</span></p>
 <p>Here is <strong><span class="custom-marker custom-marker-default">bold and marked content</span></strong></p>
 <h3>Heading with <span class="custom-marker custom-marker-default">marked content</span></h3>
 ```
 
-You can use the marker syntax in the tables, lists, blockquotes etc. For detailed examples, you can have a look at the test files in the github repo.
+You can use the marker syntax in the tables, headings, lists, blockquotes etc. For detailed examples, you can have a look at the test files in the github repo.
 
 ## Syntax tree
 
