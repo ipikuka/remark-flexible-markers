@@ -2,6 +2,7 @@ import { visit, type Visitor, type VisitorResult } from "unist-util-visit";
 import type { Plugin, Transformer } from "unified";
 import type { Paragraph, Root, Text } from "mdast";
 import { u } from "unist-builder";
+import textr from "textr";
 
 // satisfies the regex [a-z]
 type Keys =
@@ -70,6 +71,7 @@ export type FlexibleMarkerOptions = {
   markerTagName?: string;
   markerClassName?: string;
   markerProperties?: PropertyFunction;
+  doubleEqualityCheck?: string;
 };
 
 const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
@@ -77,6 +79,7 @@ const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
   markerTagName: "mark",
   markerClassName: "flexible-marker",
   markerProperties: undefined,
+  doubleEqualityCheck: undefined,
 };
 
 export const REGEX = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/;
@@ -127,16 +130,23 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       data: {
         hName: settings.markerTagName,
         hProperties: {
-          className: !markedText
-            ? [settings.markerClassName!, `${settings.markerClassName!}-empty`]
-            : color
-              ? [settings.markerClassName!, `${settings.markerClassName!}-${color}`]
-              : [settings.markerClassName!, `${settings.markerClassName!}-default`],
+          className: [
+            settings.markerClassName!,
+            `${settings.markerClassName!}-${!markedText ? "empty" : color ?? "default"}`,
+          ],
           ...(_properties && { ..._properties }),
         },
       },
     };
   };
+
+  /**
+   * Textr plugin: a function that replaces with double equality.
+   */
+  function doubleEquality(input: string): string {
+    const re = new RegExp(settings.doubleEqualityCheck!, "gi");
+    return input.replace(re, "==");
+  }
 
   /**
    *
@@ -146,7 +156,14 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
   const visitor: Visitor<Text> = function (node, index, parent): VisitorResult {
     if (!parent) return;
 
-    if (!REGEX.test(node.value)) return;
+    if (!REGEX.test(node.value)) {
+      if (settings.doubleEqualityCheck) {
+        const typography = textr({}).use(doubleEquality);
+        node.value = typography.exec(node.value);
+      }
+
+      return;
+    }
 
     const children: Array<Text | Paragraph> = [];
     const value = node.value;

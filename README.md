@@ -125,6 +125,7 @@ use(remarkFlexibleMarkers, {
   markerTagName?: string; // default is "mark"
   markerClassName?: string; // default is "flexible-marker"
   markerProperties?: PropertyFunction, // default is undefined
+  doubleEqualityCheck?: string, // default is undefined
 } as FlexibleMarkerOptions);
 ```
 
@@ -143,6 +144,16 @@ It is a **string** option for providing custom className for the `mark` node oth
 #### `markerProperties`
 
 It is an option to set additional properties for the `mark` node. It is a callback function that takes the `color` as optional argument and returns the object which is going to be used for adding additional properties into the `mark` node. If you input for example as `=r=`, the param `color` would be `"red"`.
+
+#### `doubleEqualityCheck`
+
+It is a **string** option in order not to confuse with logical double equality `(example: a == b)`. 
+
+If there is **one double equalty expression** in a text node, there is no problem. But if there is **two double equality expressions** in a text node, the plugin assumes they are marker but actually not. 
+
+The **default value** of this option is **undefined**, which means no check. 
+
+In order the plugin to handle this kind of expressions correctly, for example `If a == b and c == d then the theorem is right`, assuming you set the option `doubleEqualityCheck: "=:="`, the expression should be `If a =:= b and c =:= d then the theorem is right`. Then, the plugin is going to convert the `=:=` into `==` as should be.
 
 ## Examples:
 
@@ -198,6 +209,25 @@ is going to produce:
 ```
 
 You can use the marker syntax in the tables, headings, lists, blockquotes etc. For detailed examples, you can have a look at the test files in the github repo.
+
+#### With doubleEqualityCheck option
+
+```javascript
+use(remarkFlexibleMarkers, {
+  doubleEqualityCheck: "=:=",
+});
+```
+
+```markdown
+If a == b and c == d then the theorem is right
+
+If a =:= b and c =:= d then the theorem is right
+```
+
+```html
+<p>If a <mark class="flexible-marker flexible-marker-default">b and c</mark> d then the theorem is right</p>
+<p>If a == b and c == d then the theorem is right</p>
+```
 
 ## Syntax tree
 

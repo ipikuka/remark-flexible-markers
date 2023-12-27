@@ -13,7 +13,7 @@
     "prettier": "prettier --write .",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs",
     "test:regex": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs regex.spec.ts",
-    "test:file": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs markdown.spec.ts",
+    "test:file": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs options.spec.ts",
     "prepack": "npm run build",
     "prepublishOnly": "npm test && npm run prettier && npm run lint"
   },
@@ -48,6 +48,7 @@
     "@types/dedent": "^0.7.2",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.5",
+    "@types/textr": "^0.3.3",
     "@types/vfile": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
@@ -70,6 +71,7 @@
   },
   "dependencies": {
     "@types/mdast": "^4.0.0",
+    "textr": "^0.3.0",
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.0.0"
   },
