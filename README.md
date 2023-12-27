@@ -210,7 +210,7 @@ is going to produce:
 
 You can use the marker syntax in the tables, headings, lists, blockquotes etc. For detailed examples, you can have a look at the test files in the github repo.
 
-#### With doubleEqualityCheck option
+#### With "doubleEqualityCheck" option
 
 ```javascript
 use(remarkFlexibleMarkers, {
