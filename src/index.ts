@@ -63,13 +63,13 @@ const dictionary: Dictionary = {
   z: "black",
 };
 
-type TPropertyFunction = (color?: string) => Record<string, unknown>;
+type PropertyFunction = (color?: string) => Record<string, unknown>;
 
 export type FlexibleMarkerOptions = {
   dictionary?: Dictionary;
   markerTagName?: string;
   markerClassName?: string;
-  markerProperties?: TPropertyFunction;
+  markerProperties?: PropertyFunction;
 };
 
 const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
@@ -128,10 +128,10 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
         hName: settings.markerTagName,
         hProperties: {
           className: !markedText
-            ? [settings.markerClassName, `${settings.markerClassName}-empty`]
+            ? [settings.markerClassName!, `${settings.markerClassName!}-empty`]
             : color
-            ? [settings.markerClassName, `${settings.markerClassName}-${color}`]
-            : [settings.markerClassName, `${settings.markerClassName}-default`],
+              ? [settings.markerClassName!, `${settings.markerClassName!}-${color}`]
+              : [settings.markerClassName!, `${settings.markerClassName!}-default`],
           ...(_properties && { ..._properties }),
         },
       },
