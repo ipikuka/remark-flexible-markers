@@ -13,7 +13,7 @@
     "prettier": "prettier --write .",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs",
     "test:regex": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs regex.spec.ts",
-    "test:file": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs options.spec.ts",
+    "test:file": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs without_options.spec.ts",
     "prepack": "npm run build",
     "prepublishOnly": "npm test && npm run prettier && npm run lint"
   },
