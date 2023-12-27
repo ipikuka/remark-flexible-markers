@@ -17,7 +17,7 @@ This plugin is useful if you want to **add a custom <mark> element** in markdown
 
 ## Installation
 
-This package is suitable for ESM only. In Node.js (version 14.14+, 16.0+), install with npm:
+This package is suitable for ESM only. In Node.js (version 16+), install with npm:
 
 ```bash
 npm install remark-flexible-markers
@@ -114,15 +114,18 @@ Without `remark-flexible-markers`, you’d get:
 
 ## Options
 
-All options are optional and have default values.
+All options are **optional** and have **default values**.
 
 ```javascript
+// type Dictionary = Partial<Record<Keys, string | undefined>>;
+// type PropertyFunction = (color?: string) => Record<string, unknown>;
+
 use(remarkFlexibleMarkers, {
-  dictionary?: Dictionary; // optional, default is represented above
-  markerTagName?: string; // optional, default is "mark"
-  markerClassName?: string; // optional, default is "flexible-marker"
-  markerProperties: (color: string) => Record<string, unknown>, // optional, default is undefined
-});
+  dictionary?: Dictionary; // default is represented above
+  markerTagName?: string; // default is "mark"
+  markerClassName?: string; // default is "flexible-marker"
+  markerProperties?: PropertyFunction, // default is undefined
+} as FlexibleMarkerOptions);
 ```
 
 #### `dictionary`
@@ -150,7 +153,7 @@ Here is =r=marked content with red classification==
 
 Here is **==bold and marked content==**
 
-### Heading with ==marked content==
+### Heading with ==marked content in heading==
 ```
 
 #### Without any option
@@ -165,7 +168,7 @@ is going to produce as default:
 <p>Here is <mark class="flexible-marker flexible-marker-default">marked content</mark></p>
 <p>Here is <mark class="flexible-marker flexible-marker-red">marked content with red classification</mark></p>
 <p>Here is <strong><mark class="flexible-marker flexible-marker-default">bold and marked content</mark></strong></p>
-<h3>Heading with <mark class="flexible-marker flexible-marker-default">marked content</mark></h3>
+<h3>Heading with <mark class="flexible-marker flexible-marker-default">marked content in heading</mark></h3>
 ```
 
 #### With options
