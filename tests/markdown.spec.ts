@@ -67,4 +67,19 @@ describe("within a markdown content", () => {
       "
     `);
   });
+
+  it("with two double equality expressions in a text node", async () => {
+    const input = dedent`
+      If a == b and c == d, then the theorem is true.
+
+      If a =:= b and c =:= d, then the theorem is true.
+    `;
+
+    expect(await process(input)).toMatchInlineSnapshot(`
+      "
+      <p>If a <mark class="flexible-marker flexible-marker-default">b and c</mark> d, then the theorem is true.</p>
+      <p>If a =:= b and c =:= d, then the theorem is true.</p>
+      "
+    `);
+  });
 });

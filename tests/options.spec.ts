@@ -22,6 +22,7 @@ const compiler = unified()
         ["data-color"]: color,
       };
     },
+    doubleEqualityCheck: "=:=",
   })
   .use(remarkRehype)
   .use(rehypeStringify);
@@ -30,7 +31,7 @@ const process = async (contents: VFileCompatible): Promise<VFileCompatible> => {
   return compiler.process(contents).then((file) => file.value);
 };
 
-describe("no options - fail", () => {
+describe("with options - fail", () => {
   // ******************************************
   it("bad usage", async () => {
     const input = dedent`
@@ -41,18 +42,21 @@ describe("no options - fail", () => {
       =marked text with bad wrapped==
 
       ==**strong text in marker, instead of marked text in strong**==
+
+      ==Google is [here](https://www.google.com) available==
     `;
 
     expect(await process(input)).toMatchInlineSnapshot(`
       "<p>=ab=marked text with more than one classification==</p>
       <p>==marked text with bad wrapped=</p>
       <p>=marked text with bad wrapped==</p>
-      <p>==<strong>strong text in marker, instead of marked text in strong</strong>==</p>"
+      <p>==<strong>strong text in marker, instead of marked text in strong</strong>==</p>
+      <p>==Google is <a href="https://www.google.com">here</a> available==</p>"
     `);
   });
 });
 
-describe("no options - success", () => {
+describe("with options - success", () => {
   // ******************************************
   it("empty markers", async () => {
     const input = dedent(`
@@ -135,6 +139,19 @@ describe("no options - success", () => {
       <p>Here is <span class="custom-marker custom-marker-red" data-color="red">marked content with red classification</span></p>
       <p>Here is <strong><span class="custom-marker custom-marker-default">bold and marked content</span></strong></p>
       <h3>Heading with <span class="custom-marker custom-marker-default">marked content</span></h3>"
+    `);
+  });
+
+  it("with two double equality expressions in a text node and handle it via doubleEqualityCheck option", async () => {
+    const input = dedent`
+      If a == b and c == d, then the theorem is true.
+
+      If a =:= b and c =:= d, then the theorem is true.
+    `;
+
+    expect(await process(input)).toMatchInlineSnapshot(`
+      "<p>If a <span class="custom-marker custom-marker-default">b and c</span> d, then the theorem is true.</p>
+      <p>If a == b and c == d, then the theorem is true.</p>"
     `);
   });
 });
