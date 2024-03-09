@@ -1,8 +1,12 @@
-import { visit, type Visitor, type VisitorResult } from "unist-util-visit";
+import { visit } from "unist-util-visit";
+import type { Visitor, VisitorResult } from "unist-util-visit";
 import type { Plugin, Transformer } from "unified";
-import type { Paragraph, Root, Text } from "mdast";
+import type { PhrasingContent, Root, Text } from "mdast";
+import { findAllBetween } from "unist-util-find-between-all";
+import { findAllBefore } from "unist-util-find-all-before";
+import { findAllAfter } from "unist-util-find-all-after";
+import { findAfter } from "unist-util-find-after";
 import { u } from "unist-builder";
-import textr from "textr";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = { [K in keyof T]: T[K] } & {};
@@ -84,16 +88,30 @@ const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
   dictionary,
   markerTagName: "mark",
   markerClassName: "flexible-marker",
-  markerProperties: undefined,
-  doubleEqualityCheck: undefined,
 };
 
 type PartiallyRequiredFlexibleMarkerOptions = Prettify<
   PartiallyRequired<FlexibleMarkerOptions, "dictionary" | "markerTagName" | "markerClassName">
 >;
 
-export const REGEX = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/;
-export const REGEX_GLOBAL = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/g;
+// the previous regex was not strict related with spaces
+// export const REGEX = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/;
+// export const REGEX_GLOBAL = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/g;
+
+// the new regex is strict!
+// it doesn't allow a space after the first double equity sign
+// it doesn't allow a space before the last double equity sign
+export const REGEX = /=([a-z]?)=(?![\s=])([\s\S]*?)(?<![\s=])==/;
+export const REGEX_GLOBAL = /=([a-z]?)=(?![\s=])([\s\S]*?)(?<![\s=])==/g;
+
+export const REGEX_STARTING = /=([a-z]?)=(?![\s]|=+\s)/;
+export const REGEX_STARTING_GLOBAL = /=([a-z]?)=(?![\s]|=+\s)/g;
+
+export const REGEX_ENDING = /(?<!\s|\s=|\s==|\s===|\s====)==/;
+export const REGEX_ENDING_GLOBAL = /(?<!\s|\s=|\s==|\s===|\s====)==/g;
+
+export const REGEX_EMPTY = /=([a-z]?)=\s*==/;
+export const REGEX_EMPTY_GLOBAL = /=([a-z]?)=\s*==/g;
 
 /**
  *
@@ -105,7 +123,7 @@ export const REGEX_GLOBAL = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/g;
  * Here is =r=marked text with red classification==
  *
  */
-export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
+const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
   const settings = Object.assign(
     {},
     DEFAULT_SETTINGS,
@@ -118,14 +136,16 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
   /**
    *
-   * constracts the custom <mark> node
+   * constracts the custom Mark node as a MDAST node
    *
    */
-  const constructMarker = (
-    color: string | undefined,
-    markedText: string | undefined,
-  ): Paragraph => {
+  const constructMarkNode = (
+    classification: Key | undefined,
+    children: PhrasingContent[],
+  ): PhrasingContent => {
     let _properties: Record<string, unknown> | undefined;
+
+    const color = settings.dictionary[classification as Key];
 
     if (settings.markerProperties) {
       _properties = settings.markerProperties(color);
@@ -139,14 +159,15 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     // https://github.com/syntax-tree/mdast-util-to-hast#example-supporting-custom-nodes
     return {
-      type: "paragraph",
-      children: [{ type: "text", value: markedText ?? "" }],
+      // @ts-expect-error
+      type: "mark",
+      children,
       data: {
         hName: settings.markerTagName,
         hProperties: {
           className: [
             settings.markerClassName,
-            `${settings.markerClassName!}-${!markedText ? "empty" : color ?? "default"}`,
+            `${settings.markerClassName}-${children.length ? color ?? "default" : "empty"}`,
           ],
           ...(_properties && { ..._properties }),
         },
@@ -155,31 +176,16 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
   };
 
   /**
-   * Textr plugin: a function that replaces with double equality.
-   */
-  function doubleEquality(input: string): string {
-    const re = new RegExp(settings.doubleEqualityCheck!, "gi");
-    return input.replace(re, "==");
-  }
-
-  /**
    *
-   * visits the text nodes which match with the mark syntax (==markedtextcontent==)
+   * visits the Text nodes to match with the mark syntax (==marked text content==)
    *
    */
-  const visitor: Visitor<Text> = function (node, index, parent): VisitorResult {
+  const visitorFirst: Visitor<Text> = function (node, index, parent): VisitorResult {
     if (!parent) return;
 
-    if (!REGEX.test(node.value)) {
-      if (settings.doubleEqualityCheck) {
-        const typography = textr({}).use(doubleEquality);
-        node.value = typography.exec(node.value);
-      }
+    if (!REGEX.test(node.value)) return;
 
-      return;
-    }
-
-    const children: Array<Text | Paragraph> = [];
+    const children: Array<PhrasingContent> = [];
     const value = node.value;
     let tempValue = "";
     let prevMatchIndex = 0;
@@ -190,8 +196,9 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
     for (let index = 0; index < matches.length; index++) {
       const match = matches[index];
 
+      const [matched, classification, markedText] = match;
       const mIndex = match.index ?? 0;
-      const mLength = match[0].length; // match[0] is the matched input
+      const mLength = matched.length;
 
       // could be a text part before each matched part
       const textPartIndex = index === 0 ? 0 : prevMatchIndex + prevMatchLength;
@@ -203,17 +210,13 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       if (mIndex > textPartIndex) {
         const textValue = value.substring(textPartIndex, mIndex);
 
-        const textNode = u("text", textValue) as Text;
+        const textNode = u("text", textValue);
         children.push(textNode);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [input, classification, markedText] = match;
-
-      const markerNode = constructMarker(
-        settings.dictionary[classification as Keys],
-        markedText,
-      );
+      const markerNode = constructMarkNode(classification as Key, [
+        { type: "text", value: markedText.trim() },
+      ]);
 
       children.push(markerNode);
 
@@ -223,15 +226,116 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     // if there is still text after the last match
     if (tempValue) {
-      const textNode = u("text", tempValue) as Text;
+      const textNode = u("text", tempValue);
       children.push(textNode);
     }
 
     if (children.length) parent.children.splice(index!, 1, ...children);
   };
 
+  /**
+   *
+   * visits the Text nodes to find the mark syntax (==marked **text** content==)
+   * if parent contains other content phrases
+   *
+   */
+  const visitorSecond: Visitor<Text> = function (node, index, parent): VisitorResult {
+    if (!parent) return;
+
+    // control if the Text node matches with "starting mark regex"
+    if (!REGEX_STARTING.test(node.value)) return;
+
+    const openingNode = node;
+
+    // control if any next child Text node of the parent has "ending mark regex"
+    const closingNode = findAfter(parent, openingNode, function (node) {
+      return node.type === "text" && REGEX_ENDING.test((node as Text).value);
+    });
+
+    if (!closingNode) return;
+
+    // now, ensured that the parent has a mark element between opening Text node and closing Text nodes
+
+    const beforeChildren = findAllBefore(parent, openingNode) as PhrasingContent[];
+    const markChildren = findAllBetween(parent, openingNode, closingNode) as PhrasingContent[];
+    const afterChildren = findAllAfter(parent, closingNode) as PhrasingContent[];
+
+    /********************* OPENING NODE ***********************/
+
+    // let's analyze the opening Text node
+    const value = openingNode.value;
+
+    const match = Array.from(value.matchAll(REGEX_STARTING_GLOBAL))[0];
+
+    const [matched, classification] = match;
+    const mLength = matched.length;
+    const mIndex = match.index ?? 0;
+
+    // if there is a text part before
+    if (mIndex > 0) {
+      const textValue = value.substring(0, mIndex);
+
+      const textNode = u("text", textValue);
+      beforeChildren.push(textNode);
+    }
+
+    // if there is a text part after
+    if (value.length > mIndex + mLength) {
+      const textValue = value.slice(mIndex + mLength);
+
+      const textNode = u("text", textValue);
+      markChildren.unshift(textNode);
+    }
+
+    /********************* CLOSING NODE ***********************/
+
+    // let's analyze the closing Text node
+    const value_ = (closingNode as Text).value;
+
+    const match_ = Array.from(value_.matchAll(REGEX_ENDING_GLOBAL))[0];
+
+    const [matched_] = match_;
+    const mLength_ = matched_.length;
+    const mIndex_ = match_.index ?? 0;
+
+    // if there is a text part before
+    if (mIndex_ > 0) {
+      const textValue = value_.substring(0, mIndex_);
+
+      const textNode = u("text", textValue);
+      markChildren.push(textNode);
+    }
+
+    // if there is a text part after
+    if (value_.length > mIndex_ + mLength_) {
+      const textValue = value_.slice(mIndex_ + mLength_);
+
+      const textNode = u("text", textValue);
+      afterChildren.unshift(textNode);
+    }
+
+    // now it is time to construct a mark node
+    const markNode = constructMarkNode(classification as Key, markChildren);
+
+    parent.children = [...beforeChildren, markNode, ...afterChildren];
+
+    return index; // in order to re-visit the same node and children
+  };
+
   const transformer: Transformer<Root> = (tree) => {
-    visit(tree, "text", visitor);
+    // to find markers in a Text node
+    visit(tree, "text", visitorFirst);
+
+    // to find markers if the parent contains other content phrases
+    visit(tree, "text", visitorSecond);
+
+    // to correct the mathematical double equity signs
+    if (settings.doubleEqualityCheck) {
+      const REGEX_EQUALITY = new RegExp(settings.doubleEqualityCheck, "gi");
+      visit(tree, "text", (node) => {
+        node.value = node.value.replaceAll(REGEX_EQUALITY, "==");
+      });
+    }
   };
 
   return transformer;
