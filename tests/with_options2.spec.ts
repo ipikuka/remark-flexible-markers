@@ -5,12 +5,11 @@ import { process } from "./util/index";
 
 const options: FlexibleMarkerOptions = {
   dictionary: { b: "brother" },
-  markerClassName: "custom-marker",
-  markerTagName: "span",
-  markerProperties(color) {
-    return {
-      ["data-color"]: color,
-    };
+  markerClassName: (color) => {
+    return [`remark-marker-${color ?? "yellow"}`];
+  },
+  markerTagName: (color) => {
+    return color ?? "yellow";
   },
   equalityOperator: "=:=",
 };
@@ -54,10 +53,10 @@ describe("with options", () => {
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><span class="custom-marker custom-marker-default custom-marker-empty"></span></p>
-      <p><span class="custom-marker custom-marker-default custom-marker-empty"></span></p>
-      <p><span class="custom-marker custom-marker-gray custom-marker-empty" data-color="gray"></span></p>
-      <p><span class="custom-marker custom-marker-gray custom-marker-empty" data-color="gray"></span></p>"
+      "<p><yellow class="remark-marker-yellow"></yellow></p>
+      <p><yellow class="remark-marker-yellow"></yellow></p>
+      <p><gray class="remark-marker-gray"></gray></p>
+      <p><gray class="remark-marker-gray"></gray></p>"
     `);
   });
 
@@ -70,8 +69,8 @@ describe("with options", () => {
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><span class="custom-marker custom-marker-default">default marked</span> ==  could not marked  ==</p>
-      <p><span class="custom-marker custom-marker-red" data-color="red">red marked</span> =b=  could not blue marked  ==</p>"
+      "<p><yellow class="remark-marker-yellow">default marked</yellow> ==  could not marked  ==</p>
+      <p><red class="remark-marker-red">red marked</red> =b=  could not blue marked  ==</p>"
     `);
   });
 
@@ -88,10 +87,10 @@ describe("with options", () => {
       `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><strong><span class="custom-marker custom-marker-default">bold marked</span></strong></p>
-      <p>Here <strong><span class="custom-marker custom-marker-red" data-color="red">bold marked</span></strong></p>
-      <p><strong><span class="custom-marker custom-marker-default">bold marked</span></strong> is here</p>
-      <p><strong>strong <span class="custom-marker custom-marker-brother" data-color="brother">bold marked</span></strong></p>"
+      "<p><strong><yellow class="remark-marker-yellow">bold marked</yellow></strong></p>
+      <p>Here <strong><red class="remark-marker-red">bold marked</red></strong></p>
+      <p><strong><yellow class="remark-marker-yellow">bold marked</yellow></strong> is here</p>
+      <p><strong>strong <brother class="remark-marker-brother">bold marked</brother></strong></p>"
     `);
   });
 
@@ -104,8 +103,8 @@ describe("with options", () => {
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><span class="custom-marker custom-marker-red" data-color="red">red marked</span> with extra content <span class="custom-marker custom-marker-brother" data-color="brother">blue marked</span></p>
-      <p><span class="custom-marker custom-marker-default">default marked</span> <strong>with extra boldcontent</strong> <span class="custom-marker custom-marker-default">another default marked</span></p>"
+      "<p><red class="remark-marker-red">red marked</red> with extra content <brother class="remark-marker-brother">blue marked</brother></p>
+      <p><yellow class="remark-marker-yellow">default marked</yellow> <strong>with extra boldcontent</strong> <yellow class="remark-marker-yellow">another default marked</yellow></p>"
     `);
   });
 
@@ -122,10 +121,10 @@ describe("with options", () => {
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p>Here is <span class="custom-marker custom-marker-default">marked content</span></p>
-      <p>Here is <span class="custom-marker custom-marker-red" data-color="red">marked content with red classification</span></p>
-      <p>Here is <strong><span class="custom-marker custom-marker-default">bold and marked content</span></strong></p>
-      <h3>Heading with <span class="custom-marker custom-marker-default">marked content</span></h3>"
+      "<p>Here is <yellow class="remark-marker-yellow">marked content</yellow></p>
+      <p>Here is <red class="remark-marker-red">marked content with red classification</red></p>
+      <p>Here is <strong><yellow class="remark-marker-yellow">bold and marked content</yellow></strong></p>
+      <h3>Heading with <yellow class="remark-marker-yellow">marked content</yellow></h3>"
     `);
   });
 
@@ -141,7 +140,7 @@ describe("with options", () => {
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
       "<p>If a == b and c == d, then the theorem is true.</p>
-      <p>If a<span class="custom-marker custom-marker-default">b and c</span>d, then the theorem is true.</p>
+      <p>If a<yellow class="remark-marker-yellow">b and c</yellow>d, then the theorem is true.</p>
       <p>If a==b and c==d, then the theorem is true.</p>"
     `);
   });
@@ -157,9 +156,9 @@ describe("with options", () => {
     `;
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><span class="custom-marker custom-marker-default">If a == b and c == d, then the theorem is true.</span></p>
-      <p><span class="custom-marker custom-marker-default">If a</span>b and c<span class="custom-marker custom-marker-default">d, then the theorem is true.</span></p>
-      <p><span class="custom-marker custom-marker-default">If a==b and c==d, then the theorem is true.</span></p>"
+      "<p><yellow class="remark-marker-yellow">If a == b and c == d, then the theorem is true.</yellow></p>
+      <p><yellow class="remark-marker-yellow">If a</yellow>b and c<yellow class="remark-marker-yellow">d, then the theorem is true.</yellow></p>
+      <p><yellow class="remark-marker-yellow">If a==b and c==d, then the theorem is true.</yellow></p>"
     `);
   });
 
@@ -172,8 +171,8 @@ describe("with options", () => {
     `;
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><span class="custom-marker custom-marker-default">outer ==inner</span> marked==</p>
-      <p><span class="custom-marker custom-marker-default">marked</span>inner<span class="custom-marker custom-marker-default">marked</span></p>"
+      "<p><yellow class="remark-marker-yellow">outer ==inner</yellow> marked==</p>
+      <p><yellow class="remark-marker-yellow">marked</yellow>inner<yellow class="remark-marker-yellow">marked</yellow></p>"
     `);
   });
 
@@ -186,8 +185,8 @@ describe("with options", () => {
     `;
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><span class="custom-marker custom-marker-red" data-color="red"><strong>xxx<span class="custom-marker custom-marker-green" data-color="green"><em>yyy</em></span>zzz</strong></span></p>
-      <p><span class="custom-marker custom-marker-red" data-color="red">Google is <a href="https://www.google.com"><span class="custom-marker custom-marker-green" data-color="green">another marker</span></a> in marker</span></p>"
+      "<p><red class="remark-marker-red"><strong>xxx<green class="remark-marker-green"><em>yyy</em></green>zzz</strong></red></p>
+      <p><red class="remark-marker-red">Google is <a href="https://www.google.com"><green class="remark-marker-green">another marker</green></a> in marker</red></p>"
     `);
   });
 });

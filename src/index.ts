@@ -101,12 +101,14 @@ const dictionary: Dictionary = {
   z: "black",
 };
 
-type PropertyFunction = (color?: string) => Record<string, unknown>;
+type TagNameFunction = (color?: string) => string;
+type ClassNameFunction = (color?: string) => string[];
+type PropertyFunction = (color?: string) => Record<string, unknown> & { className?: never };
 
 export type FlexibleMarkerOptions = {
   dictionary?: Dictionary;
-  markerTagName?: string;
-  markerClassName?: string;
+  markerTagName?: string | TagNameFunction;
+  markerClassName?: string | ClassNameFunction;
   markerProperties?: PropertyFunction;
   equalityOperator?: string;
   actionForEmptyContent?: "keep" | "remove" | "marker";
@@ -147,6 +149,14 @@ export const REGEX_EMPTY_GLOBAL = /=([a-z]?)=\s*==/g;
 
 /**
  *
+ * a utility like "clsx" package
+ */
+export function clsx<T>(arr: (T | false | null | undefined | 0)[]): T[] {
+  return arr.filter((item): item is T => !!item);
+}
+
+/**
+ *
  * This plugin turns ==content== into a <mark> element with customizable classification
  *
  * for example:
@@ -175,16 +185,35 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
     classification: Key | undefined,
     children: PhrasingContent[],
   ): Mark => {
-    let _properties: Record<string, unknown> | undefined;
+    let properties: Record<string, unknown> | undefined;
 
-    const color = settings.dictionary[classification as Key];
+    const color = classification ? settings.dictionary[classification] : undefined;
+
+    const markerTagName =
+      typeof settings.markerTagName === "string"
+        ? settings.markerTagName
+        : settings.markerTagName(color);
+
+    const markerClassName =
+      typeof settings.markerClassName === "function"
+        ? settings.markerClassName(color)
+        : clsx<string>([
+            settings.markerClassName,
+            !classification && `${settings.markerClassName}-default`,
+            color && `${settings.markerClassName}-${color}`,
+            !children.length && `${settings.markerClassName}-empty`,
+          ]);
 
     if (settings.markerProperties) {
-      _properties = settings.markerProperties(color);
+      properties = settings.markerProperties(color);
 
-      Object.entries(_properties).forEach(([k, v]) => {
-        if ((typeof v === "string" && v === "") || (Array.isArray(v) && v.length === 0)) {
-          _properties && (_properties[k] = undefined);
+      Object.entries(properties).forEach(([k, v]) => {
+        if (
+          (typeof v === "string" && v === "") ||
+          (Array.isArray(v) && v.length === 0) ||
+          k === "className"
+        ) {
+          properties && (properties[k] = undefined);
         }
       });
     }
@@ -194,13 +223,10 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       type: "mark",
       children,
       data: {
-        hName: settings.markerTagName,
+        hName: markerTagName,
         hProperties: {
-          className: [
-            settings.markerClassName,
-            `${settings.markerClassName}-${children.length ? color ?? "default" : "empty"}`,
-          ],
-          ...(_properties && { ..._properties }),
+          className: markerClassName,
+          ...(properties && { ...properties }),
         },
       },
     };
