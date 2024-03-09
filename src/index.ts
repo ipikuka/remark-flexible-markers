@@ -1,7 +1,7 @@
 import { CONTINUE, SKIP, visit } from "unist-util-visit";
 import type { Visitor, VisitorResult } from "unist-util-visit";
 import type { Plugin, Transformer } from "unified";
-import type { PhrasingContent, Root, Text } from "mdast";
+import type { Data, Parent, PhrasingContent, Root, Text } from "mdast";
 import { findAllBetween } from "unist-util-find-between-all";
 import { findAllBefore } from "unist-util-find-all-before";
 import { findAllAfter } from "unist-util-find-all-after";
@@ -13,6 +13,33 @@ export type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type PartiallyRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+export interface MarkData extends Data {}
+
+export interface Mark extends Parent {
+  /**
+   * Node type of mdast Mark.
+   */
+  type: "mark";
+  /**
+   * Children of paragraph.
+   */
+  children: PhrasingContent[];
+  /**
+   * Data associated with the mdast paragraph.
+   */
+  data?: MarkData | undefined;
+}
+
+declare module "mdast" {
+  interface PhrasingContentMap {
+    mark: Mark;
+  }
+
+  interface RootContentMap {
+    mark: Mark;
+  }
+}
 
 // satisfies the regex [a-z]
 type Key =
@@ -147,7 +174,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
   const constructMarkNode = (
     classification: Key | undefined,
     children: PhrasingContent[],
-  ): PhrasingContent => {
+  ): Mark => {
     let _properties: Record<string, unknown> | undefined;
 
     const color = settings.dictionary[classification as Key];
@@ -164,7 +191,6 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     // https://github.com/syntax-tree/mdast-util-to-hast#example-supporting-custom-nodes
     return {
-      // @ts-expect-error
       type: "mark",
       children,
       data: {
