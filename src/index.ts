@@ -81,7 +81,7 @@ export type FlexibleMarkerOptions = {
   markerTagName?: string;
   markerClassName?: string;
   markerProperties?: PropertyFunction;
-  doubleEqualityCheck?: string;
+  equalityOperator?: string;
 };
 
 const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
@@ -330,8 +330,8 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
     visit(tree, "text", visitorSecond);
 
     // to correct the mathematical double equity signs
-    if (settings.doubleEqualityCheck) {
-      const REGEX_EQUALITY = new RegExp(settings.doubleEqualityCheck, "gi");
+    if (settings.equalityOperator) {
+      const REGEX_EQUALITY = new RegExp(settings.equalityOperator, "gi");
       visit(tree, "text", (node) => {
         node.value = node.value.replaceAll(REGEX_EQUALITY, "==");
       });
