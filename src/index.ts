@@ -4,6 +4,12 @@ import type { Paragraph, Root, Text } from "mdast";
 import { u } from "unist-builder";
 import textr from "textr";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Prettify<T> = { [K in keyof T]: T[K] } & {};
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type PartiallyRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
 // satisfies the regex [a-z]
 type Key =
   | "a"
@@ -82,6 +88,10 @@ const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
   doubleEqualityCheck: undefined,
 };
 
+type PartiallyRequiredFlexibleMarkerOptions = Prettify<
+  PartiallyRequired<FlexibleMarkerOptions, "dictionary" | "markerTagName" | "markerClassName">
+>;
+
 export const REGEX = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/;
 export const REGEX_GLOBAL = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/g;
 
@@ -96,7 +106,11 @@ export const REGEX_GLOBAL = /=([a-z]?)=\s*([^=]*[^ ])?\s*==/g;
  *
  */
 export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
-  const settings = Object.assign({}, DEFAULT_SETTINGS, options);
+  const settings = Object.assign(
+    {},
+    DEFAULT_SETTINGS,
+    options,
+  ) as PartiallyRequiredFlexibleMarkerOptions;
 
   if (options?.dictionary && Object.keys(options.dictionary).length) {
     settings.dictionary = Object.assign({}, dictionary, options.dictionary);
@@ -131,7 +145,7 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
         hName: settings.markerTagName,
         hProperties: {
           className: [
-            settings.markerClassName!,
+            settings.markerClassName,
             `${settings.markerClassName!}-${!markedText ? "empty" : color ?? "default"}`,
           ],
           ...(_properties && { ..._properties }),
@@ -197,7 +211,7 @@ export const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       const [input, classification, markedText] = match;
 
       const markerNode = constructMarker(
-        settings.dictionary ? settings.dictionary[classification as Keys] : undefined,
+        settings.dictionary[classification as Keys],
         markedText,
       );
 
