@@ -5,7 +5,7 @@ import { u } from "unist-builder";
 import textr from "textr";
 
 // satisfies the regex [a-z]
-type Keys =
+type Key =
   | "a"
   | "b"
   | "c"
@@ -33,20 +33,20 @@ type Keys =
   | "y"
   | "z";
 
-type Dictionary = Partial<Record<Keys, string | undefined>>;
+type Dictionary = Partial<Record<Key, string>>;
 
 const dictionary: Dictionary = {
   a: "amber",
   b: "blue",
   c: "cyan",
   d: "brown",
-  e: undefined,
+  e: "espresso",
   f: "fuchsia",
   g: "green",
   h: "hotpink",
-  i: undefined,
-  j: undefined,
-  k: undefined,
+  i: "indigo",
+  j: "jade",
+  k: "kiwi",
   l: "lime",
   m: "magenta",
   n: "navyblue",
@@ -56,7 +56,7 @@ const dictionary: Dictionary = {
   r: "red",
   s: "silver",
   t: "teal",
-  u: undefined,
+  u: "umber",
   v: "violet",
   w: "white",
   x: "gray",
