@@ -87,13 +87,13 @@ Without `remark-flexible-markers`, you’d get:
   b: "blue",
   c: "cyan",
   d: "brown",
-  e: undefined,
+  e: "espresso",
   f: "fuchsia",
   g: "green",
   h: "hotpink",
-  i: undefined,
-  j: undefined,
-  k: undefined,
+  i: "indigo",
+  j: "jade",
+  k: "kiwi",
   l: "lime",
   m: "magenta",
   n: "navyblue",
@@ -103,7 +103,7 @@ Without `remark-flexible-markers`, you’d get:
   r: "red",
   s: "silver",
   t: "teal",
-  u: undefined,
+  u: "umber",
   v: "violet",
   w: "white",
   x: "gray",
@@ -117,7 +117,7 @@ Without `remark-flexible-markers`, you’d get:
 All options are **optional** and have **default values**.
 
 ```javascript
-// type Dictionary = Partial<Record<Keys, string | undefined>>;
+// type Dictionary = Partial<Record<Key, string>>;
 // type PropertyFunction = (color?: string) => Record<string, unknown>;
 
 use(remarkFlexibleMarkers, {
