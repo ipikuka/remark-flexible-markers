@@ -47,28 +47,39 @@ describe("remark-flexigraph regex tests", () => {
         input: "=a=marked=",
         expect: null,
       },
-      //********************************* */
-      {
-        input: "====",
-        expect: {
-          classification: "",
-          markedText: undefined,
-        },
-      },
       {
         input: "== ==",
-        expect: {
-          classification: "",
-          markedText: undefined,
-        },
+        expect: null,
       },
       {
         input: "==  ==",
-        expect: {
-          classification: "",
-          markedText: undefined,
-        },
+        expect: null,
       },
+      {
+        input: "== marked marked    ==",
+        expect: null,
+      },
+      {
+        input: "=x= ==",
+        expect: null,
+      },
+      {
+        input: "=x=  ==",
+        expect: null,
+      },
+      {
+        input: "=x=   marked marked  ==",
+        expect: null,
+      },
+      {
+        input: "====",
+        expect: null,
+      },
+      {
+        input: "=x===",
+        expect: null,
+      },
+      //********************************* */
       {
         input: "==marked==",
         expect: {
@@ -77,38 +88,10 @@ describe("remark-flexigraph regex tests", () => {
         },
       },
       {
-        input: "== marked marked    ==",
-        expect: {
-          classification: "",
-          markedText: "marked marked",
-        },
-      },
-      {
-        input: "=x===",
-        expect: {
-          classification: "x",
-          markedText: undefined,
-        },
-      },
-      {
-        input: "=x= ==",
-        expect: {
-          classification: "x",
-          markedText: undefined,
-        },
-      },
-      {
         input: "=x=marked==",
         expect: {
           classification: "x",
           markedText: "marked",
-        },
-      },
-      {
-        input: "=x=   marked marked  ==",
-        expect: {
-          classification: "x",
-          markedText: "marked marked",
         },
       },
     ];
