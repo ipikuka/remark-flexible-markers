@@ -48,10 +48,10 @@ describe("no options", () => {
     `);
 
     expect(await process(input, { actionForEmptyContent: "marker" })).toMatchInlineSnapshot(`
-      "<p><mark class="flexible-marker flexible-marker-empty"></mark></p>
-      <p><mark class="flexible-marker flexible-marker-empty"></mark>a</p>
-      <p><mark class="flexible-marker flexible-marker-empty"></mark></p>
-      <p><mark class="flexible-marker flexible-marker-empty"></mark>a</p>"
+      "<p><mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark></p>
+      <p><mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark>a</p>
+      <p><mark class="flexible-marker flexible-marker-gray flexible-marker-empty"></mark></p>
+      <p><mark class="flexible-marker flexible-marker-gray flexible-marker-empty"></mark>a</p>"
     `);
 
     expect(await process(input, { actionForEmptyContent: "remove" })).toMatchInlineSnapshot(`
