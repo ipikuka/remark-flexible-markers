@@ -1,4 +1,4 @@
-import { visit } from "unist-util-visit";
+import { CONTINUE, SKIP, visit } from "unist-util-visit";
 import type { Visitor, VisitorResult } from "unist-util-visit";
 import type { Plugin, Transformer } from "unified";
 import type { PhrasingContent, Root, Text } from "mdast";
@@ -82,16 +82,21 @@ export type FlexibleMarkerOptions = {
   markerClassName?: string;
   markerProperties?: PropertyFunction;
   equalityOperator?: string;
+  actionForEmptyContent?: "keep" | "remove" | "marker";
 };
 
 const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
   dictionary,
   markerTagName: "mark",
   markerClassName: "flexible-marker",
+  actionForEmptyContent: "marker",
 };
 
 type PartiallyRequiredFlexibleMarkerOptions = Prettify<
-  PartiallyRequired<FlexibleMarkerOptions, "dictionary" | "markerTagName" | "markerClassName">
+  PartiallyRequired<
+    FlexibleMarkerOptions,
+    "dictionary" | "markerTagName" | "markerClassName" | "actionForEmptyContent"
+  >
 >;
 
 // the previous regex was not strict related with spaces
@@ -322,12 +327,83 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
     return index; // in order to re-visit the same node and children
   };
 
+  /**
+   *
+   * visits the Text nodes to find empty markers (==== or == ==)
+   *
+   */
+  const visitorThird: Visitor<Text> = function (node, index, parent): VisitorResult {
+    if (!parent) return;
+
+    if (!REGEX_EMPTY.test(node.value)) return;
+
+    if (settings.actionForEmptyContent === "remove") {
+      node.value = node.value.replaceAll(REGEX_EMPTY_GLOBAL, "");
+
+      // https://unifiedjs.com/learn/recipe/remove-node/
+      if (node.value.trim() === "") return [SKIP, index];
+
+      return CONTINUE;
+    }
+
+    const children: Array<PhrasingContent> = [];
+    const value = node.value;
+    let tempValue = "";
+    let prevMatchIndex = 0;
+    let prevMatchLength = 0;
+
+    const matches = Array.from(value.matchAll(REGEX_EMPTY_GLOBAL));
+
+    for (let index = 0; index < matches.length; index++) {
+      const match = matches[index];
+
+      const [matched, classification] = match;
+      const mIndex = match.index ?? 0;
+      const mLength = matched.length;
+
+      // could be a text part before each matched part
+      const textPartIndex = index === 0 ? 0 : prevMatchIndex + prevMatchLength;
+
+      prevMatchIndex = mIndex;
+      prevMatchLength = mLength;
+
+      // if there is a text part before
+      if (mIndex > textPartIndex) {
+        const textValue = value.substring(textPartIndex, mIndex);
+
+        const textNode = u("text", textValue);
+        children.push(textNode);
+      }
+
+      // empty marker
+      const markerNode = constructMarkNode(classification as Key, []);
+
+      children.push(markerNode);
+
+      // control for the last text node if exists after the last match
+      tempValue = value.slice(mIndex + mLength);
+    }
+
+    // if there is still text after the last match
+    if (tempValue) {
+      const textNode = u("text", tempValue);
+      children.push(textNode);
+    }
+
+    if (children.length) parent.children.splice(index!, 1, ...children);
+  };
+
   const transformer: Transformer<Root> = (tree) => {
     // to find markers in a Text node
     visit(tree, "text", visitorFirst);
 
     // to find markers if the parent contains other content phrases
     visit(tree, "text", visitorSecond);
+
+    // to find empty markers (==== or == ==)
+    if (settings.actionForEmptyContent !== "keep") {
+      visit(tree, "text", visitorThird);
+    }
 
     // to correct the mathematical double equity signs
     if (settings.equalityOperator) {
