@@ -1,23 +1,6 @@
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import gfm from "remark-gfm";
-import remarkRehype from "remark-rehype";
-import rehypeStringify from "rehype-stringify";
 import dedent from "dedent";
-import type { VFileCompatible } from "vfile";
 
-import plugin from "../src";
-
-const compiler = unified()
-  .use(remarkParse)
-  .use(gfm)
-  .use(plugin)
-  .use(remarkRehype)
-  .use(rehypeStringify);
-
-const process = async (contents: VFileCompatible): Promise<VFileCompatible> => {
-  return compiler.process(contents).then((file) => file.value);
-};
+import { process } from "./util/index";
 
 describe("no options - fail", () => {
   // ******************************************
@@ -29,47 +12,67 @@ describe("no options - fail", () => {
 
       =marked text with bad wrapped==
 
-      ==**strong text in marker, instead of marked text in strong**==
+      == marked text with unwanted space==
+
+      ==marked text with unwanted space ==
     `;
 
     expect(await process(input)).toMatchInlineSnapshot(`
       "<p>=ab=marked text with more than one classification==</p>
       <p>==marked text with bad wrapped=</p>
       <p>=marked text with bad wrapped==</p>
-      <p>==<strong>strong text in marker, instead of marked text in strong</strong>==</p>"
+      <p>== marked text with unwanted space==</p>
+      <p>==marked text with unwanted space ==</p>"
     `);
   });
 });
 
-describe("no options - success", () => {
+describe("no options", () => {
   // ******************************************
   it("empty markers", async () => {
     const input = dedent(`
       ====
 
-      ==  ==
+      ==  ==a
 
-      Here **empty** ==== marker within a content
+      =x===
+
+      =x=  ==a
     `);
 
-    expect(await process(input)).toMatchInlineSnapshot(`
+    expect(await process(input, { actionForEmptyContent: "keep" })).toMatchInlineSnapshot(`
+      "<p>====</p>
+      <p>==  ==a</p>
+      <p>=x===</p>
+      <p>=x=  ==a</p>"
+    `);
+
+    expect(await process(input, { actionForEmptyContent: "marker" })).toMatchInlineSnapshot(`
       "<p><mark class="flexible-marker flexible-marker-empty"></mark></p>
+      <p><mark class="flexible-marker flexible-marker-empty"></mark>a</p>
       <p><mark class="flexible-marker flexible-marker-empty"></mark></p>
-      <p>Here <strong>empty</strong> <mark class="flexible-marker flexible-marker-empty"></mark> marker within a content</p>"
+      <p><mark class="flexible-marker flexible-marker-empty"></mark>a</p>"
+    `);
+
+    expect(await process(input, { actionForEmptyContent: "remove" })).toMatchInlineSnapshot(`
+      "<p></p>
+      <p>a</p>
+      <p></p>
+      <p>a</p>"
     `);
   });
 
   // ******************************************
   it("standart usage", async () => {
     const input = dedent(`
-      ==default marked== ==  another default marked  == 
+      ==default marked== ==  could not marked  == 
 
-      =r=red marked== =b=  blue marked  == 
+      =r=red marked== =b=  could not blue marked  == 
     `);
 
     expect(await process(input)).toMatchInlineSnapshot(`
-      "<p><mark class="flexible-marker flexible-marker-default">default marked</mark> <mark class="flexible-marker flexible-marker-default">another default marked</mark></p>
-      <p><mark class="flexible-marker flexible-marker-red">red marked</mark> <mark class="flexible-marker flexible-marker-blue">blue marked</mark></p>"
+      "<p><mark class="flexible-marker flexible-marker-default">default marked</mark> ==  could not marked  ==</p>
+      <p><mark class="flexible-marker flexible-marker-red">red marked</mark> =b=  could not blue marked  ==</p>"
     `);
   });
 
@@ -96,9 +99,9 @@ describe("no options - success", () => {
   // ******************************************
   it("standart usage with extra content", async () => {
     const input = dedent(`      
-      =r=red marked== with extra content =b=  blue marked  == 
+      =r=red marked== with extra content =b=blue marked== 
 
-      ==default marked== **with extra boldcontent** ==  another default marked    == 
+      ==default marked== **with extra boldcontent** ==another default marked== 
     `);
 
     expect(await process(input)).toMatchInlineSnapshot(`
@@ -124,6 +127,68 @@ describe("no options - success", () => {
       <p>Here is <mark class="flexible-marker flexible-marker-red">marked content with red classification</mark></p>
       <p>Here is <strong><mark class="flexible-marker flexible-marker-default">bold and marked content</mark></strong></p>
       <h3>Heading with <mark class="flexible-marker flexible-marker-default">marked content</mark></h3>"
+    `);
+  });
+
+  // ******************************************
+  it("with two double equality expressions in a text node has not been catched expectedly", async () => {
+    const input = dedent`
+      If a == b and c == d, then the theorem is true.
+
+      If a==b and c==d, then the theorem is true.
+
+      If a=:=b and c=:=d, then the theorem is true.
+    `;
+
+    expect(await process(input)).toMatchInlineSnapshot(`
+      "<p>If a == b and c == d, then the theorem is true.</p>
+      <p>If a<mark class="flexible-marker flexible-marker-default">b and c</mark>d, then the theorem is true.</p>
+      <p>If a=:=b and c=:=d, then the theorem is true.</p>"
+    `);
+  });
+
+  // ******************************************
+  it("highlight the whole theroem", async () => {
+    const input = dedent`
+      ==If a == b and c == d, then the theorem is true.==
+
+      ==If a==b and c==d, then the theorem is true.==
+
+      ==If a=:=b and c=:=d, then the theorem is true.==
+    `;
+
+    expect(await process(input)).toMatchInlineSnapshot(`
+      "<p><mark class="flexible-marker flexible-marker-default">If a == b and c == d, then the theorem is true.</mark></p>
+      <p><mark class="flexible-marker flexible-marker-default">If a</mark>b and c<mark class="flexible-marker flexible-marker-default">d, then the theorem is true.</mark></p>
+      <p><mark class="flexible-marker flexible-marker-default">If a=:=b and c=:=d, then the theorem is true.</mark></p>"
+    `);
+  });
+
+  // ******************************************
+  it("nested markers don't work, arbitrary marked texts are considered right", async () => {
+    const input = dedent`
+      ==outer ==inner== marked==
+
+      ==marked==inner==marked==
+    `;
+
+    expect(await process(input)).toMatchInlineSnapshot(`
+      "<p><mark class="flexible-marker flexible-marker-default">outer ==inner</mark> marked==</p>
+      <p><mark class="flexible-marker flexible-marker-default">marked</mark>inner<mark class="flexible-marker flexible-marker-default">marked</mark></p>"
+    `);
+  });
+
+  // ******************************************
+  it("marker works if contains other phrasing contents", async () => {
+    const input = dedent`
+      =r=**xxx=g=_yyy_==zzz**==
+
+      =r=Google is [=g=another marker==](https://www.google.com) in marker==
+    `;
+
+    expect(await process(input)).toMatchInlineSnapshot(`
+      "<p><mark class="flexible-marker flexible-marker-red"><strong>xxx<mark class="flexible-marker flexible-marker-green"><em>yyy</em></mark>zzz</strong></mark></p>
+      <p><mark class="flexible-marker flexible-marker-red">Google is <a href="https://www.google.com"><mark class="flexible-marker flexible-marker-green">another marker</mark></a> in marker</mark></p>"
     `);
   });
 });
