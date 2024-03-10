@@ -5,15 +5,15 @@
 ![npm-typescript]
 [![License][github-license]][github-license-url]
 
-This package is a [unified][unified] ([remark][remark]) plugin to add custom marker in a flexible way (compatible with new parser "[micromark][micromark]").
+This package is a [unified][unified] ([remark][remark]) plugin to add custom `<mark>` node in a flexible way.
 
-"**unified**" is a project that transforms content with abstract syntax trees (ASTs). "**remark**" adds support for markdown to unified. "**mdast**" is the markdown abstract syntax tree (AST) that remark uses.
+**[unified][unified]** is a project that transforms content with abstract syntax trees (ASTs) using the new parser **[micromark][micromark]**. **[remark][remark]** adds support for markdown to unified. **[mdast][mdast]** is the Markdown Abstract Syntax Tree (AST) which is a specification for representing markdown in a syntax tree.
 
 **This plugin is a remark plugin that transforms the mdast.**
 
 ## When should I use this?
 
-This plugin is useful if you want to **add a custom <mark> element** in markdown for providing marked or highlighted text, _with custom tag name, custom class name, custom color classification, and also additional properties_. **You can easily create <mark> element with the `remark-flexible-markers`.**
+This plugin is useful if you want to **add a custom `<mark>` element** in markdown for providing marked or highlighted text, _with custom tag name, custom class name, custom color classification, and also additional properties_. **You can easily create `<mark>` element with the `remark-flexible-markers`.**
 
 ## Installation
 
@@ -31,16 +31,29 @@ yarn add remark-flexible-markers
 
 ## Usage
 
-**use `==` or `=[classification key]=`**
+#### `==` sign around the content
 
-#### ==marked content==
+```markdown
+==marked content==
+```
 
-#### =r=marked content with red classification==
+> [!IMPORTANT]
+> The `==` in the begining part of representation specifies there is NO `color` specification.
+
+#### `=[classification key]=` at the beginning side, `==` at the ending side
+
+```markdown
+=r=marked content with red classification==
+```
+
+> [!IMPORTANT]
+> The `=r=` at the beginning part of representation specifies the `color` specification is `"red"`.
 
 Say we have the following file, `example.md`, which consists some flexible markers.
 
 ```markdown
 ==marked content==
+=r=marked content==
 ```
 
 And our module, `example.js`, looks as follows:
@@ -67,22 +80,104 @@ async function main() {
 }
 ```
 
-Now, running `node example.js` yields:\
+Now, running `node example.js` yields:
 
 ```html
-<p><mark class="flexible-marker flexible-marker-default">marked content</mark></p>
+<p>
+  <mark class="flexible-marker flexible-marker-default">marked content</mark>
+  <mark class="flexible-marker flexible-marker-red">marked content</mark>
+</p>
 ```
 
 Without `remark-flexible-markers`, you’d get:
 
 ```html
-<p>==marked content==</p>
+<p>==marked content==
+=r=marked content==</p>
 ```
 
-## Dictionary
+> [!CAUTION]
+> **The double equity signs must be adjacent to the content**.\
+> **The content must be wrapped with double equity signs, not singular at any side.**\
+> **More than one classification is not allowed.**
+
+Here are some bad usage, and will not work.
+
+```markdown
+==text with bad wrapped=
+
+=text with bad wrapped==
+
+== text with unwanted space==
+
+==text with unwanted space ==
+
+=ab=text with more than one classification==
+```
+
+## It is more powerfull
+
+As of version ^1.1.0, the `remark-flexible-markers` can handle also the syntax containing the content with other markdown phrases like `strong`, `epmhasis`, `link` etc. For example:
+
+```
+==**marked bold content**==
+
+==_marked italic content_==
+
+==[marked link](https://google.com)==
+```
+
+```html
+<p>
+  <mark class="flexible-marker flexible-marker-default">
+    <strong>marked bold content</strong>
+  </mark>
+</p>
+<p>
+  <mark class="flexible-marker flexible-marker-default">
+    <em>marked italic content</em>
+  </mark>
+</p>
+<p>
+  <mark class="flexible-marker flexible-marker-default">
+    <a href="https://google.com">marked link</a>
+  </mark>
+</p>
+```
+
+## Options
+
+All options are **optional** and have **default values**.
 
 ```javascript
-{
+type Dictionary = Partial<Record<Key, string>>;
+type TagNameFunction = (color?: string) => string;
+type ClassNameFunction = (color?: string) => string[];
+type PropertyFunction = (color?: string) => Record<string, unknown> & { className?: never };
+
+use(remarkFlexibleMarkers, {
+  dictionary?: Dictionary; // explained in the options section
+  markerTagName?: string | TagNameFunction; // default is "mark"
+  markerClassName?: string | ClassNameFunction; // default is "flexible-marker"
+  markerProperties?: PropertyFunction;
+  equalityOperator?: string;
+  actionForEmptyContent?: "keep" | "remove" | "marker"; // // default is "marker"
+} as FlexibleMarkerOptions);
+```
+
+#### `dictionary`
+
+It is a **key, value** option for providing **color classification** for the `mark` node.
+
+The dictionary is opinionated, by default.
+
+```typescript
+type Key = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" 
+         | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
+
+type Dictionary = Partial<Record<Key, string>>;
+
+const dictionary: Dictionary = {
   a: "amber",
   b: "blue",
   c: "cyan",
@@ -112,59 +207,258 @@ Without `remark-flexible-markers`, you’d get:
 };
 ```
 
-## Options
-
-All options are **optional** and have **default values**.
+**You can override the dictionary entries.**
 
 ```javascript
-// type Dictionary = Partial<Record<Key, string>>;
-// type PropertyFunction = (color?: string) => Record<string, unknown>;
-
 use(remarkFlexibleMarkers, {
-  dictionary?: Dictionary; // default is represented above
-  markerTagName?: string; // default is "mark"
-  markerClassName?: string; // default is "flexible-marker"
-  markerProperties?: PropertyFunction, // default is undefined
-  doubleEqualityCheck?: string, // default is undefined
-} as FlexibleMarkerOptions);
+  dictionary: {
+    w: "wall"
+  };
+});
 ```
 
-#### `dictionary`
+Now, it is overriden for the only `w` key, and the color classification will be `wall` instead of default one `white`.
 
-It is an **key, value** option for providing color classification value for the `mark` node. If you provide `dictionary: {w: "wall"}`, it overrides to the only `w` key, and the value would be "wall" instead of default one "white".
+```markdown
+=w=marked content==
+```
+
+```html
+<p>
+  <mark class="remark-marker remark-marker-wall">marked content</mark>
+</p>
+```
 
 #### `markerTagName`
 
-It is a **string** option for providing custom HTML tag name for the `mark` node other than `mark`.
+It is a **string** or a **callback** `(color?: string) => string` option for providing custom HTML tag name for `mark` nodes.
+
+By default, it is `mark` which is well known HTML element for highlighting the texts.
+
+```javascript
+use(remarkFlexibleMarkers, {
+  markerTagName: "span";
+});
+```
+
+Now, the element tag names will be `span`.
+
+```html
+<span class="...">marked content</span>
+```
+
+The option can take also a callback function, which has an optional argument `color`, and returns **string** representing the **custom tag name**. 
+
+```javascript
+use(remarkFlexibleMarkers, {
+  markerTagName: (color) => color ?? "yellow";
+});
+```
+
+Now, the element tag names will be the color name.
+
+```markdown
+==marked content==
+=r=marked content==
+```
+
+```html
+<p>
+  <yellow class="...">marked content</yellow>
+  <red class="...">marked content</red>
+</p>
+```
 
 #### `markerClassName`
 
-It is a **string** option for providing custom className for the `mark` node other than `flexible-marker`.
+It is a **string** or a **callback** `(color?: string) => string[]` option for providing custom className for the `mark` node. 
+
+By default, it is `flexible-marker`, and all mark nodes' classnames will contain `flexible-marker`.
+
+A mark node contains also a **secondary class name** representing the **color specification** which starts with the `flexible-marker-` and ends with the `color specification`, like `flexible-marker-red` or `flexible-marker-blue`. If there is no color classification, then the secondary class name will be `flexible-marker-default`.
+
+If a mark syntax in the document has no content, and would wanted to be an empty marker, the class name will contain `flexible-marker-empty`, additionally.
+
+```javascript
+use(remarkFlexibleMarkers, {
+  markerClassName: "remark-marker";
+});
+```
+
+Now, the mark nodes will have `remark-marker` as a className, and the secondary class names will start with `remark-marker-`.
+
+```markdown
+==marked content==
+=r=marked content==
+```
+
+```html
+<p>
+  <mark class="remark-marker remark-marker-default">marked content</mark>
+  <mark class="remark-marker remark-marker-red">marked content</mark>
+</p>
+```
+
+The option can take also a callback function, which has an optional argument `color`, and returns **array of strings** representing **class names**. 
+
+```javascript
+use(remarkFlexibleMarkers, {
+  markerClassName: (color) => {
+    return [`marker-${color ?? "yellow"}`]
+  };
+});
+```
+
+Now, the element class names **will contain only one class name** like `marker-yellow`, `marker-red` etc.
+
+```markdown
+==marked content==
+=r=marked content==
+```
+
+```html
+<p>
+  <mark class="marker-yellow">marked content</mark>
+  <mark class="marker-red">marked content</mark>
+</p>
+```
+
+> [!WARNING]
+> **If you use the `markerClassName` option as a function, it is your responsibility to define class names, primary or secondary in an array.**
 
 #### `markerProperties`
 
-It is an option to set additional properties for the `mark` node. It is a callback function that takes the `color` as optional argument and returns the object which is going to be used for adding additional properties into the `mark` node. If you input for example as `=r=`, the param `color` would be `"red"`.
+It is a **callback** `(color?: string) => Record<string, unknown> & { className?: never }` option to set additional properties for the `mark` node.
 
-#### `doubleEqualityCheck`
+The callback function that takes the `color` as optional argument and returns **object** which is going to be used for adding additional properties into the `mark` node.
 
-It is a **string** option in order not to confuse with logical double equality `(example: a == b)`. 
+**The `className` key is forbidden in the returned object.**
 
-If there is **one double equalty expression** in a text node, there is no problem. But if there is **two double equality expressions** in a text node, the plugin assumes they are marker but actually not. 
+```javascript
+use(remarkFlexibleMarkers, {
+  markerProperties(color) {
+    return {
+      ["data-color"]: color,
+    };
+  },
+});
+```
 
-The **default value** of this option is **undefined**, which means no check. 
+Now, the mark nodes which have a color classification will contain `data-color` property.
 
-In order the plugin to handle this kind of expressions correctly, for example `If a == b and c == d then the theorem is right`, assuming you set the option `doubleEqualityCheck: "=:="`, the expression should be `If a =:= b and c =:= d then the theorem is right`. Then, the plugin is going to convert the `=:=` into `==` as should be.
+```markdown
+==marked content==
+=r=marked content==
+```
+
+```html
+<p>
+  <mark class="flexible-marker flexible-marker-default">marked content</mark>
+  <mark class="flexible-marker flexible-marker-red" data-color="red">marked content</mark>
+</p>
+```
+
+#### `equalityOperator`
+
+It is a **string** option in order not to confuse with mathematical equality operator like `if a == b, then ...`.
+
+If there is a space around **double equality** in a mathematical text, there is no problem, since the plugin will not match with these.
+
+`If a == b and c == d then the theorem is right.` --> will not cause any problem.
+
+But, if there is **NO** space around **double equality** in a mathematical text, the plugin assumes they are marker but actually not. 
+
+`If a==b and c==d then the theorem is right.` --> will cause the plugin match a marker `<mark>b and c</mark>`, unwantedly.
+
+In order the plugin to handle this kind of mathematical expressions correctly, there is `equalityOperator` option.
+
+```javascript
+use(remarkFlexibleMarkers, {
+  equalityOperator: "=:=",
+});
+```
+
+```markdown
+If a=:=b and c=:=d then the theorem is right
+```
+
+Now, the plugin is going to convert the `=:=` into `==` as should be. 
+
+```html
+<p>If a==b and c==d then the theorem is right</p>
+```
+
+By default, the option is **undefined**, which means no check happens.
+
+#### `actionForEmptyContent`
+
+It is a **union** `"keep" | "remove" | "mark"` option to handle marker syntax with empty content in a markdown document.
+
+By default, it is `mark`, meaningly the plugin will create an empty `<mark>` node for marker syntax with empty content.
+
+I don't know what could be a reason you use empty markers, but anyway I wanted to handle it. Here is an example marker syntax with empty content.
+
+```markdown
+====, ==  ==, =r===, =r= ==
+```
+
+You have **three options** to handle marker syntax with empty content.
+
+##### **`keep`** will keep the syntax as it is.
+
+```javascript
+use(remarkFlexibleMarkers, {
+  actionForEmptyContent: "keep",
+});
+```
+will produce:
+```html
+<p>====, ==  ==, =r===, =r= ==</p>
+```
+
+##### **`remove`** will remove the mark syntax with empty content.
+
+```javascript
+use(remarkFlexibleMarkers, {
+  actionForEmptyContent: "remove",
+});
+```
+
+will produce:
+
+```html
+<p>, , , </p>
+```
+
+##### **`mark`** will crate an empty `<mark>` node.
+
+```javascript
+use(remarkFlexibleMarkers, {
+  actionForEmptyContent: "mark", // actually, it is default
+});
+```
+
+will produce `<mark>` nodes with additional class name "flexible-marker-empty".
+
+```html
+<p>
+  <mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark>,
+  <mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark>,
+  <mark class="flexible-marker flexible-marker-red flexible-marker-empty"></mark>,
+  <mark class="flexible-marker flexible-marker-red flexible-marker-empty"></mark>
+</p>
+```
 
 ## Examples:
 
 ```markdown
 Here is ==marked content==
 
-Here is =r=marked content with red classification==
+Here is =r=marked content with r classification==
 
-Here is **==bold and marked content==**
+Here are **==bold marked content==** and ==**bold marked content**==
 
-### Heading with ==marked content in heading==
+### ==marked content in headings==
 ```
 
 #### Without any option
@@ -176,10 +470,27 @@ use(remarkFlexibleMarkers);
 is going to produce as default:
 
 ```html
-<p>Here is <mark class="flexible-marker flexible-marker-default">marked content</mark></p>
-<p>Here is <mark class="flexible-marker flexible-marker-red">marked content with red classification</mark></p>
-<p>Here is <strong><mark class="flexible-marker flexible-marker-default">bold and marked content</mark></strong></p>
-<h3>Heading with <mark class="flexible-marker flexible-marker-default">marked content in heading</mark></h3>
+<p>
+  Here is 
+  <mark class="flexible-marker flexible-marker-default">marked content</mark>
+</p>
+<p>
+  Here is 
+  <mark class="flexible-marker flexible-marker-red">marked content with r classification</mark>
+</p>
+<p>
+  Here are 
+  <strong>
+    <mark class="flexible-marker flexible-marker-default">bold marked content</mark>
+  </strong>
+   and 
+  <mark class="flexible-marker flexible-marker-default">
+    <strong>bold marked content</strong>
+  </mark>
+</p>
+<h3>
+  <mark class="flexible-marker flexible-marker-default">marked content in headings</mark>
+</h3>
 ```
 
 #### With options
@@ -202,32 +513,31 @@ use(remarkFlexibleMarkers, {
 is going to produce:
 
 ```html
-<p>Here is <span class="custom-marker custom-marker-default">marked content</span></p>
-<p>Here is <span class="custom-marker custom-marker-rain" data-color="rain">marked content with red classification</span></p>
-<p>Here is <strong><span class="custom-marker custom-marker-default">bold and marked content</span></strong></p>
-<h3>Heading with <span class="custom-marker custom-marker-default">marked content</span></h3>
+<p>
+  Here is 
+  <span class="custom-marker custom-marker-default">marked content</span>
+</p>
+<p>
+  Here is 
+  <span class="custom-marker custom-marker-rain" data-color="rain">marked content with r classification</span>
+</p>
+<p>
+  Here are 
+  <strong>
+    <span class="custom-marker custom-marker-default">bold marked content</span>
+  </strong>
+   and 
+  <span class="custom-marker custom-marker-default">
+    <strong>bold marked content</strong>
+  </span>
+</p>
+<h3>
+  <span class="custom-marker custom-marker-default">marked content in headings</span>
+</h3>
 ```
 
-You can use the marker syntax in the tables, headings, lists, blockquotes etc. For detailed examples, you can have a look at the test files in the github repo.
-
-#### With "doubleEqualityCheck" option
-
-```javascript
-use(remarkFlexibleMarkers, {
-  doubleEqualityCheck: "=:=",
-});
-```
-
-```markdown
-If a == b and c == d then the theorem is right
-
-If a =:= b and c =:= d then the theorem is right
-```
-
-```html
-<p>If a <mark class="flexible-marker flexible-marker-default">b and c</mark> d then the theorem is right</p>
-<p>If a == b and c == d then the theorem is right</p>
-```
+> [!TIP]
+> You can use the marker syntax in the **tables**, **headings**, **lists**, **blockquotes** etc. You can have a look at the test files in the github repo for detailed examples.
 
 ## Syntax tree
 
@@ -239,25 +549,44 @@ This package is fully typed with [TypeScript][typeScript]. The plugin options' t
 
 ## Compatibility
 
-This plugin works with unified version 6+ and remark version 7+. It is compatible with mdx version.2.
+This plugin works with `unified` version 6+ and `remark` version 7+. It is compatible with `mdx` version 2+.
 
 ## Security
 
 Use of `remark-flexible-markers` does not involve rehype (hast) or user content so there are no openings for cross-site scripting (XSS) attacks.
 
-## My Remark Plugins
+## My Plugins
 
-The remark packages I have published are presented below:
-+ [`remark-flexible-code-titles`](https://www.npmjs.com/package/remark-flexible-code-titles)
+I like to contribute the Unified / Remark / MDX ecosystem, so I recommend you to have a look my plugins.
+
+### My Remark Plugins
+
+- [`remark-flexible-code-titles`](https://www.npmjs.com/package/remark-flexible-code-titles)
   – Remark plugin to add titles or/and containers for the code blocks with customizable properties
-+ [`remark-flexible-containers`](https://www.npmjs.com/package/remark-flexible-containers)
+- [`remark-flexible-containers`](https://www.npmjs.com/package/remark-flexible-containers)
   – Remark plugin to add custom containers with customizable properties in markdown
-+ [`remark-flexible-paragraphs`](https://www.npmjs.com/package/remark-flexible-paragraphs)
-  – Remark plugin to add custom paragraphs with customizable properties in markdown
-+ [`remark-flexible-markers`](https://www.npmjs.com/package/remark-flexible-markers)
-  – Remark plugin to add custom `mark` element with customizable properties in markdown
-+ [`remark-ins`](https://www.npmjs.com/package/remark-ins)
+- [`remark-ins`](https://www.npmjs.com/package/remark-ins)
   – Remark plugin to add `ins` element in markdown
+- [`remark-flexible-paragraphs`](https://www.npmjs.com/package/remark-flexible-paragraphs)
+  – Remark plugin to add custom paragraphs with customizable properties in markdown
+- [`remark-flexible-markers`](https://www.npmjs.com/package/remark-flexible-markers)
+  – Remark plugin to add custom `mark` element with customizable properties in markdown
+- [`remark-flexible-toc`](https://www.npmjs.com/package/remark-flexible-toc)
+  – Remark plugin to expose the table of contents via Vfile.data or via an option reference
+- [`remark-mdx-remove-esm`](https://www.npmjs.com/package/remark-mdx-remove-esm)
+  – Remark plugin to remove import and/or export statements (mdxjsEsm)
+
+### My Rehype Plugins
+
+- [`rehype-pre-language`](https://www.npmjs.com/package/rehype-pre-language)
+  – Rehype plugin to add language information as a property to `pre` element
+
+### My Recma Plugins
+
+- [`recma-mdx-escape-missing-components`](https://www.npmjs.com/package/recma-mdx-escape-missing-components)
+  – Recma plugin to set the default value `() => null` for the Components in MDX in case of missing or not provided so as not to throw an error
+- [`recma-mdx-change-props`](https://www.npmjs.com/package/recma-mdx-change-props)
+  – Recma plugin to change the `props` parameter into the `_props` in the `function _createMdxContent(props) {/* */}` in the compiled source in order to be able to use `{props.foo}` like expressions. It is useful for the `next-mdx-remote` or `next-mdx-remote-client` users in `nextjs` applications.
 
 ## License
 
@@ -265,7 +594,7 @@ The remark packages I have published are presented below:
 
 ### Keywords
 
-[unified][unifiednpm] [remark][remarknpm] [remark-plugin][remarkpluginnpm] [mdast][mdastnpm] [markdown][markdownnpm] [remark marker][remarkCustomMarkersnpm]
+🟩 [unified][unifiednpm] 🟩 [remark][remarknpm] 🟩 [remark-plugin][remarkpluginnpm] 🟩 [mdast][mdastnpm] 🟩 [markdown][markdownnpm] 🟩 [remark marker][remarkCustomMarkersnpm]
 
 [unified]: https://github.com/unifiedjs/unified
 [unifiednpm]: https://www.npmjs.com/search?q=keywords:unified

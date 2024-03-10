@@ -94,6 +94,21 @@ describe("remark-flexigraph regex tests", () => {
           markedText: "marked",
         },
       },
+      {
+        input: "==marked== outer==",
+        expect: {
+          classification: "",
+          markedText: "marked",
+        },
+      },
+      // TODO: how to match the shorter mark ?
+      {
+        input: "==outer =x=marked==",
+        expect: {
+          classification: "",
+          markedText: "outer =x=marked",
+        },
+      },
     ];
 
     fixtures.forEach((fixture) => {

@@ -47,7 +47,7 @@ describe("no options", () => {
       <p>=x=  ==a</p>"
     `);
 
-    expect(await process(input, { actionForEmptyContent: "marker" })).toMatchInlineSnapshot(`
+    expect(await process(input, { actionForEmptyContent: "mark" })).toMatchInlineSnapshot(`
       "<p><mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark></p>
       <p><mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark>a</p>
       <p><mark class="flexible-marker flexible-marker-gray flexible-marker-empty"></mark></p>
@@ -117,16 +117,16 @@ describe("no options", () => {
 
       Here is =r=marked content with red classification==
       
-      Here is **==bold and marked content==**
+      Here are **==bold marked content==** and ==**bold marked content**==
       
-      ### Heading with ==marked content==
+      ### ==marked content in headings==
     `);
 
     expect(await process(input)).toMatchInlineSnapshot(`
       "<p>Here is <mark class="flexible-marker flexible-marker-default">marked content</mark></p>
       <p>Here is <mark class="flexible-marker flexible-marker-red">marked content with red classification</mark></p>
-      <p>Here is <strong><mark class="flexible-marker flexible-marker-default">bold and marked content</mark></strong></p>
-      <h3>Heading with <mark class="flexible-marker flexible-marker-default">marked content</mark></h3>"
+      <p>Here are <strong><mark class="flexible-marker flexible-marker-default">bold marked content</mark></strong> and <mark class="flexible-marker flexible-marker-default"><strong>bold marked content</strong></mark></p>
+      <h3><mark class="flexible-marker flexible-marker-default">marked content in headings</mark></h3>"
     `);
   });
 
