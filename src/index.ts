@@ -210,7 +210,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       Object.entries(properties).forEach(([k, v]) => {
         if (
           (typeof v === "string" && v === "") ||
-          (Array.isArray(v) && v.length === 0) ||
+          (Array.isArray(v) && (v as unknown[]).length === 0) ||
           k === "className"
         ) {
           properties && (properties[k] = undefined);
@@ -238,7 +238,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorFirst: Visitor<Text> = function (node, index, parent): VisitorResult {
-    if (!parent) return;
+    if (!parent || typeof index === "undefined") return;
 
     if (!REGEX.test(node.value)) return;
 
@@ -287,7 +287,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       children.push(textNode);
     }
 
-    if (children.length) parent.children.splice(index!, 1, ...children);
+    if (children.length) parent.children.splice(index, 1, ...children);
   };
 
   /**
@@ -385,7 +385,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorThird: Visitor<Text> = function (node, index, parent): VisitorResult {
-    if (!parent) return;
+    if (!parent || typeof index === "undefined") return;
 
     if (!REGEX_EMPTY.test(node.value)) return;
 
@@ -442,7 +442,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       children.push(textNode);
     }
 
-    if (children.length) parent.children.splice(index!, 1, ...children);
+    if (children.length) parent.children.splice(index, 1, ...children);
   };
 
   const transformer: Transformer<Root> = (tree) => {
