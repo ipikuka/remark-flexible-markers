@@ -1,13 +1,13 @@
 # remark-flexible-markers
 
-[![NPM version][npm-image]][npm-url]
-[![Build][github-build]][github-build-url]
+[![NPM version][badge-npm]][npm-package-url]
+[![Build][badge-build]][github-workflow-url]
 [![codecov](https://codecov.io/gh/ipikuka/remark-flexible-markers/graph/badge.svg?token=DB491JPTDO)](https://codecov.io/gh/ipikuka/remark-flexible-markers)
-![npm-typescript]
 [![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fipikuka%2Fremark-flexible-markers%2Fmaster%2Fpackage.json)](https://github.com/ipikuka/remark-flexible-markers)
-[![License][github-license]][github-license-url]
+[![typescript][badge-typescript]][typescript-url]
+[![License][badge-license]][github-license-url]
 
-This package is a [unified][unified] ([remark][remark]) plugin to add custom `<mark>` node in a flexible way.
+This package is a [unified][unified] ([remark][remark]) plugin to add custom `<mark>` node in a markdown document.
 
 **[unified][unified]** is a project that transforms content with abstract syntax trees (ASTs) using the new parser **[micromark][micromark]**. **[remark][remark]** adds support for markdown to unified. **[mdast][mdast]** is the Markdown Abstract Syntax Tree (AST) which is a specification for representing markdown in a syntax tree.
 
@@ -592,28 +592,34 @@ I like to contribute the Unified / Remark / MDX ecosystem, so I recommend you to
 
 ## License
 
-[MIT][license] © ipikuka
+[MIT License](./LICENSE) © ipikuka
 
 ### Keywords
 
-🟩 [unified][unifiednpm] 🟩 [remark][remarknpm] 🟩 [remark-plugin][remarkpluginnpm] 🟩 [mdast][mdastnpm] 🟩 [markdown][markdownnpm] 🟩 [remark marker][remarkCustomMarkersnpm]
+🟩 [unified][unifiednpm] 🟩 [remark][remarknpm] 🟩 [remark-plugins][remarkpluginsnpm] 🟩 [mdast][mdastnpm] 🟩 [markdown][markdownnpm] 🟩 [remark marker][remarkMarkernpm]
+
+[unifiednpm]: https://www.npmjs.com/search?q=keywords:unified
+[remarknpm]: https://www.npmjs.com/search?q=keywords:remark
+[remarkpluginsnpm]: https://www.npmjs.com/search?q=keywords:remark%20plugin
+[mdastnpm]: https://www.npmjs.com/search?q=keywords:mdast
+[markdownnpm]: https://www.npmjs.com/search?q=keywords:markdown
+[remarkMarkernpm]: https://www.npmjs.com/search?q=keywords:remark%20marker
 
 [unified]: https://github.com/unifiedjs/unified
-[unifiednpm]: https://www.npmjs.com/search?q=keywords:unified
 [remark]: https://github.com/remarkjs/remark
-[remarknpm]: https://www.npmjs.com/search?q=keywords:remark
-[remarkpluginnpm]: https://www.npmjs.com/search?q=keywords:remark%20plugin
+[remarkplugins]: https://github.com/remarkjs/remark/blob/main/doc/plugins.md
 [mdast]: https://github.com/syntax-tree/mdast
-[mdastnpm]: https://www.npmjs.com/search?q=keywords:mdast
 [micromark]: https://github.com/micromark/micromark
 [typescript]: https://www.typescriptlang.org/
-[license]: https://github.com/ipikuka/remark-flexible-markers/blob/main/LICENSE
-[markdownnpm]: https://www.npmjs.com/search?q=keywords:markdown
-[remarkCustomMarkersnpm]: https://www.npmjs.com/search?q=keywords:remark%20custom%20marker
-[npm-url]: https://www.npmjs.com/package/remark-flexible-markers
-[npm-image]: https://img.shields.io/npm/v/remark-flexible-markers
-[github-license]: https://img.shields.io/github/license/ipikuka/remark-flexible-markers
-[github-license-url]: https://github.com/ipikuka/remark-flexible-markers/blob/master/LICENSE
-[github-build]: https://github.com/ipikuka/remark-flexible-markers/actions/workflows/publish.yml/badge.svg
-[github-build-url]: https://github.com/ipikuka/remark-flexible-markers/actions/workflows/publish.yml
-[npm-typescript]: https://img.shields.io/npm/types/remark-flexible-markers
+
+[badge-npm]: https://img.shields.io/npm/v/remark-flexible-markers
+[npm-package-url]: https://www.npmjs.com/package/remark-flexible-markers
+
+[badge-license]: https://img.shields.io/github/license/ipikuka/remark-flexible-markers
+[github-license-url]: https://github.com/ipikuka/remark-flexible-markers/blob/main/LICENSE
+
+[badge-build]: https://github.com/ipikuka/remark-flexible-markers/actions/workflows/publish.yml/badge.svg
+[github-workflow-url]: https://github.com/ipikuka/remark-flexible-markers/actions/workflows/publish.yml
+
+[badge-typescript]: https://img.shields.io/npm/types/remark-flexible-markers
+[typescript-url]: https://www.typescriptlang.org/
