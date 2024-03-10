@@ -7,7 +7,7 @@
 [![typescript][badge-typescript]][typescript-url]
 [![License][badge-license]][github-license-url]
 
-This package is a [unified][unified] ([remark][remark]) plugin to add custom `<mark>` node in a markdown document.
+This package is a [unified][unified] ([remark][remark]) plugin to add custom `<mark>` element with customizable properties in markdown.
 
 **[unified][unified]** is a project that transforms content with abstract syntax trees (ASTs) using the new parser **[micromark][micromark]**. **[remark][remark]** adds support for markdown to unified. **[mdast][mdast]** is the Markdown Abstract Syntax Tree (AST) which is a specification for representing markdown in a syntax tree.
 
