@@ -116,16 +116,16 @@ describe("with options", () => {
 
       Here is =r=marked content with red classification==
       
-      Here is **==bold and marked content==**
+      Here are **==bold marked content==** and ==**bold marked content**==
       
-      ### Heading with ==marked content==
+      ### ==marked content in headings==
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
       "<p>Here is <span class="custom-marker custom-marker-default">marked content</span></p>
       <p>Here is <span class="custom-marker custom-marker-red" data-color="red">marked content with red classification</span></p>
-      <p>Here is <strong><span class="custom-marker custom-marker-default">bold and marked content</span></strong></p>
-      <h3>Heading with <span class="custom-marker custom-marker-default">marked content</span></h3>"
+      <p>Here are <strong><span class="custom-marker custom-marker-default">bold marked content</span></strong> and <span class="custom-marker custom-marker-default"><strong>bold marked content</strong></span></p>
+      <h3><span class="custom-marker custom-marker-default">marked content in headings</span></h3>"
     `);
   });
 

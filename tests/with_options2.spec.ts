@@ -77,14 +77,14 @@ describe("with options", () => {
   // ******************************************
   it("marked text in a strong", async () => {
     const input = dedent(`      
-        **==bold marked==**
+      **==bold marked==**
 
-        Here **=r=bold marked==**
+      Here **=r=bold marked==**
 
-        **==bold marked==** is here
+      **==bold marked==** is here
 
-        **strong =b=bold marked==**
-      `);
+      **strong =b=bold marked==**
+    `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
       "<p><strong><yellow class="remark-marker-yellow">bold marked</yellow></strong></p>
@@ -115,16 +115,16 @@ describe("with options", () => {
 
       Here is =r=marked content with red classification==
       
-      Here is **==bold and marked content==**
+      Here are **==bold marked content==** and ==**bold marked content**==
       
-      ### Heading with ==marked content==
+      ### ==marked content in headings==
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
       "<p>Here is <yellow class="remark-marker-yellow">marked content</yellow></p>
       <p>Here is <red class="remark-marker-red">marked content with red classification</red></p>
-      <p>Here is <strong><yellow class="remark-marker-yellow">bold and marked content</yellow></strong></p>
-      <h3>Heading with <yellow class="remark-marker-yellow">marked content</yellow></h3>"
+      <p>Here are <strong><yellow class="remark-marker-yellow">bold marked content</yellow></strong> and <yellow class="remark-marker-yellow"><strong>bold marked content</strong></yellow></p>
+      <h3><yellow class="remark-marker-yellow">marked content in headings</yellow></h3>"
     `);
   });
 

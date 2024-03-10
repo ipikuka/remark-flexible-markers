@@ -9,14 +9,14 @@ import { findAfter } from "unist-util-find-after";
 import { u } from "unist-builder";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type Prettify<T> = { [K in keyof T]: T[K] } & {};
+type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type PartiallyRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+type PartiallyRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
-export interface MarkData extends Data {}
+interface MarkData extends Data {}
 
-export interface Mark extends Parent {
+interface Mark extends Parent {
   /**
    * Node type of mdast Mark.
    */
@@ -111,14 +111,14 @@ export type FlexibleMarkerOptions = {
   markerClassName?: string | ClassNameFunction;
   markerProperties?: PropertyFunction;
   equalityOperator?: string;
-  actionForEmptyContent?: "keep" | "remove" | "marker";
+  actionForEmptyContent?: "keep" | "remove" | "mark";
 };
 
 const DEFAULT_SETTINGS: FlexibleMarkerOptions = {
   dictionary,
   markerTagName: "mark",
   markerClassName: "flexible-marker",
-  actionForEmptyContent: "marker",
+  actionForEmptyContent: "mark",
 };
 
 type PartiallyRequiredFlexibleMarkerOptions = Prettify<
