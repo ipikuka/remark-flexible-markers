@@ -10,6 +10,8 @@ const options: FlexibleMarkerOptions = {
   markerProperties(color) {
     return {
       ["data-color"]: color,
+      dummy: "", // shouldn't be added
+      empty: [], // shouldn't be added
     };
   },
   equalityOperator: "=:=",
@@ -46,18 +48,18 @@ describe("with options", () => {
     const input = dedent(`
       ====
 
-      ==  ==
+      a==  ==a
 
       =x===
 
-      =x=  ==
+      a=x=  ==a
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
       "<p><span class="custom-marker custom-marker-default custom-marker-empty"></span></p>
-      <p><span class="custom-marker custom-marker-default custom-marker-empty"></span></p>
+      <p>a<span class="custom-marker custom-marker-default custom-marker-empty"></span>a</p>
       <p><span class="custom-marker custom-marker-gray custom-marker-empty" data-color="gray"></span></p>
-      <p><span class="custom-marker custom-marker-gray custom-marker-empty" data-color="gray"></span></p>"
+      <p>a<span class="custom-marker custom-marker-gray custom-marker-empty" data-color="gray"></span>a</p>"
     `);
   });
 

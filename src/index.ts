@@ -238,6 +238,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorFirst: Visitor<Text> = function (node, index, parent): VisitorResult {
+    /* istanbul ignore next */
     if (!parent || typeof index === "undefined") return;
 
     if (!REGEX.test(node.value)) return;
@@ -254,11 +255,11 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       const match = matches[index];
 
       const [matched, classification, markedText] = match;
-      const mIndex = match.index ?? 0;
+      const mIndex = match.index!;
       const mLength = matched.length;
 
       // could be a text part before each matched part
-      const textPartIndex = index === 0 ? 0 : prevMatchIndex + prevMatchLength;
+      const textPartIndex = prevMatchIndex + prevMatchLength;
 
       prevMatchIndex = mIndex;
       prevMatchLength = mLength;
@@ -297,7 +298,8 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorSecond: Visitor<Text> = function (node, index, parent): VisitorResult {
-    if (!parent) return;
+    /* istanbul ignore next */
+    if (!parent || typeof index === "undefined") return;
 
     // control if the Text node matches with "starting mark regex"
     if (!REGEX_STARTING.test(node.value)) return;
@@ -326,7 +328,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     const [matched, classification] = match;
     const mLength = matched.length;
-    const mIndex = match.index ?? 0;
+    const mIndex = match.index!;
 
     // if there is a text part before
     if (mIndex > 0) {
@@ -353,7 +355,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     const [matched_] = match_;
     const mLength_ = matched_.length;
-    const mIndex_ = match_.index ?? 0;
+    const mIndex_ = match_.index!;
 
     // if there is a text part before
     if (mIndex_ > 0) {
@@ -385,6 +387,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorThird: Visitor<Text> = function (node, index, parent): VisitorResult {
+    /* istanbul ignore next */
     if (!parent || typeof index === "undefined") return;
 
     if (!REGEX_EMPTY.test(node.value)) return;
@@ -410,11 +413,11 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       const match = matches[index];
 
       const [matched, classification] = match;
-      const mIndex = match.index ?? 0;
+      const mIndex = match.index!;
       const mLength = matched.length;
 
       // could be a text part before each matched part
-      const textPartIndex = index === 0 ? 0 : prevMatchIndex + prevMatchLength;
+      const textPartIndex = prevMatchIndex + prevMatchLength;
 
       prevMatchIndex = mIndex;
       prevMatchLength = mLength;

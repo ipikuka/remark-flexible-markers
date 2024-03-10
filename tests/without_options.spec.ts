@@ -33,32 +33,32 @@ describe("no options", () => {
     const input = dedent(`
       ====
 
-      ==  ==a
+      a==  ==a
 
       =x===
 
-      =x=  ==a
+      a=x=  ==a
     `);
 
     expect(await process(input, { actionForEmptyContent: "keep" })).toMatchInlineSnapshot(`
       "<p>====</p>
-      <p>==  ==a</p>
+      <p>a==  ==a</p>
       <p>=x===</p>
-      <p>=x=  ==a</p>"
+      <p>a=x=  ==a</p>"
     `);
 
     expect(await process(input, { actionForEmptyContent: "mark" })).toMatchInlineSnapshot(`
       "<p><mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark></p>
-      <p><mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark>a</p>
+      <p>a<mark class="flexible-marker flexible-marker-default flexible-marker-empty"></mark>a</p>
       <p><mark class="flexible-marker flexible-marker-gray flexible-marker-empty"></mark></p>
-      <p><mark class="flexible-marker flexible-marker-gray flexible-marker-empty"></mark>a</p>"
+      <p>a<mark class="flexible-marker flexible-marker-gray flexible-marker-empty"></mark>a</p>"
     `);
 
     expect(await process(input, { actionForEmptyContent: "remove" })).toMatchInlineSnapshot(`
       "<p></p>
-      <p>a</p>
+      <p>aa</p>
       <p></p>
-      <p>a</p>"
+      <p>aa</p>"
     `);
   });
 
