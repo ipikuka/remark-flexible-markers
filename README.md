@@ -3,6 +3,7 @@
 [![NPM version][npm-image]][npm-url]
 [![Build][github-build]][github-build-url]
 ![npm-typescript]
+[![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fipikuka%2Fremark-flexible-markers%2Fmaster%2Fpackage.json)](https://github.com/ipikuka/remark-flexible-markers)
 [![License][github-license]][github-license-url]
 
 This package is a [unified][unified] ([remark][remark]) plugin to add custom `<mark>` node in a flexible way.
