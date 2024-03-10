@@ -119,7 +119,7 @@ Here are some bad usage, and will not work.
 
 ## It is more powerfull
 
-As of version `^1.1.0`, the `remark-flexible-markers` can handle also the syntax containing other markdown phrases like `strong`, `epmhasis`, `link` etc. For example:
+As of version `^1.2.0`, the `remark-flexible-markers` can handle also the syntax containing other markdown phrases like `strong`, `epmhasis`, `link` etc. For example:
 
 ```
 ==**marked bold content**==
