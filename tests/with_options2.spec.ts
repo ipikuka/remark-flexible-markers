@@ -12,6 +12,7 @@ const options: FlexibleMarkerOptions = {
     return color ?? "yellow";
   },
   equalityOperator: "=:=",
+  actionForEmptyContent: "remove",
 };
 
 describe("with options - fail", () => {
@@ -45,18 +46,18 @@ describe("with options", () => {
     const input = dedent(`
       ====
 
-      ==  ==
+      a==  ==a
 
       =x===
 
-      =x=  ==
+      a=x=  ==a
     `);
 
     expect(await process(input, options)).toMatchInlineSnapshot(`
-      "<p><yellow class="remark-marker-yellow"></yellow></p>
-      <p><yellow class="remark-marker-yellow"></yellow></p>
-      <p><gray class="remark-marker-gray"></gray></p>
-      <p><gray class="remark-marker-gray"></gray></p>"
+      "<p></p>
+      <p>aa</p>
+      <p></p>
+      <p>aa</p>"
     `);
   });
 
