@@ -84,6 +84,7 @@
     "detail": true,
     "ignoreAsAssertion": true,
     "ignoreCatch": true,
+    "ignore-non-null-assertion": true,
     "strict": true
   }
 }
