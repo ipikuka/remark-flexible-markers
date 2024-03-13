@@ -1,6 +1,7 @@
 # remark-flexible-markers
 
-[![NPM version][badge-npm]][npm-package-url]
+[![NPM version][badge-npm-version]][npm-package-url]
+[![NPM downloads][badge-npm-download]][npm-package-url]
 [![Build][badge-build]][github-workflow-url]
 [![codecov](https://codecov.io/gh/ipikuka/remark-flexible-markers/graph/badge.svg?token=DB491JPTDO)](https://codecov.io/gh/ipikuka/remark-flexible-markers)
 [![type-coverage](https://img.shields.io/badge/dynamic/json.svg?label=type-coverage&prefix=%E2%89%A5&suffix=%&query=$.typeCoverage.atLeast&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fipikuka%2Fremark-flexible-markers%2Fmaster%2Fpackage.json)](https://github.com/ipikuka/remark-flexible-markers)
@@ -117,9 +118,9 @@ Here are some bad usage, and will not work.
 =ab=text with more than one classification==
 ```
 
-## It is more powerfull
+## It is more flexible and powerful
 
-As of version `^1.2.0`, the `remark-flexible-markers` can handle also the syntax containing other markdown phrases like `strong`, `epmhasis`, `link` etc. For example:
+As of version `^1.2.0`, the `remark-flexible-markers` can handle also the syntax containing other markdown phrases like `strong`, `emphasis`, `link` etc. For example:
 
 ```
 ==**marked bold content**==
@@ -151,7 +152,7 @@ As of version `^1.2.0`, the `remark-flexible-markers` can handle also the syntax
 
 All options are **optional** and have **default values**.
 
-```javascript
+```typescript
 type Dictionary = Partial<Record<Key, string>>;
 type TagNameFunction = (color?: string) => string;
 type ClassNameFunction = (color?: string) => string[];
@@ -273,7 +274,7 @@ Now, the element tag names will be the color name.
 
 #### `markerClassName`
 
-It is a **string** or a **callback** `(color?: string) => string[]` option for providing custom className for the `mark` node. 
+It is a **string** or a **callback** `(color?: string) => string[]` option for providing custom class name for the `mark` node. 
 
 By default, it is `flexible-marker`, and all mark nodes' classnames will contain `flexible-marker`.
 
@@ -326,7 +327,7 @@ Now, the element class names **will contain only one class name** like `marker-y
 ```
 
 > [!WARNING]
-> **If you use the `markerClassName` option as a function, it is your responsibility to define class names, primary or secondary in an array.**
+> **If you use the `markerClassName` option as a callback function, it is your responsibility to define class names, primary or secondary in an array.**
 
 #### `markerProperties`
 
@@ -334,7 +335,7 @@ It is a **callback** `(color?: string) => Record<string, unknown> & { className?
 
 The callback function that takes the `color` as optional argument and returns **object** which is going to be used for adding additional properties into the `mark` node.
 
-**The `className` key is forbidden in the returned object.**
+**The `className` key is forbidden and effectless in the returned object.**
 
 ```javascript
 use(remarkFlexibleMarkers, {
@@ -596,14 +597,14 @@ I like to contribute the Unified / Remark / MDX ecosystem, so I recommend you to
 
 ### Keywords
 
-🟩 [unified][unifiednpm] 🟩 [remark][remarknpm] 🟩 [remark-plugins][remarkpluginsnpm] 🟩 [mdast][mdastnpm] 🟩 [markdown][markdownnpm] 🟩 [remark marker][remarkMarkernpm]
+🟩 [unified][unifiednpm] 🟩 [remark][remarknpm] 🟩 [remark plugin][remarkpluginnpm] 🟩 [mdast][mdastnpm] 🟩 [markdown][markdownnpm] 🟩 [remark marker][remarkmarkernpm]
 
 [unifiednpm]: https://www.npmjs.com/search?q=keywords:unified
 [remarknpm]: https://www.npmjs.com/search?q=keywords:remark
-[remarkpluginsnpm]: https://www.npmjs.com/search?q=keywords:remark%20plugin
+[remarkpluginnpm]: https://www.npmjs.com/search?q=keywords:remark%20plugin
 [mdastnpm]: https://www.npmjs.com/search?q=keywords:mdast
 [markdownnpm]: https://www.npmjs.com/search?q=keywords:markdown
-[remarkMarkernpm]: https://www.npmjs.com/search?q=keywords:remark%20marker
+[remarkmarkernpm]: https://www.npmjs.com/search?q=keywords:remark%20marker
 
 [unified]: https://github.com/unifiedjs/unified
 [remark]: https://github.com/remarkjs/remark
@@ -612,7 +613,8 @@ I like to contribute the Unified / Remark / MDX ecosystem, so I recommend you to
 [micromark]: https://github.com/micromark/micromark
 [typescript]: https://www.typescriptlang.org/
 
-[badge-npm]: https://img.shields.io/npm/v/remark-flexible-markers
+[badge-npm-version]: https://img.shields.io/npm/v/remark-flexible-markers
+[badge-npm-download]:https://img.shields.io/npm/dt/remark-flexible-markers
 [npm-package-url]: https://www.npmjs.com/package/remark-flexible-markers
 
 [badge-license]: https://img.shields.io/github/license/ipikuka/remark-flexible-markers

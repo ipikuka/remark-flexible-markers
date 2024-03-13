@@ -101,9 +101,10 @@ const dictionary: Dictionary = {
   z: "black",
 };
 
+type RestrictedRecord = Record<string, unknown> & { className?: never };
 type TagNameFunction = (color?: string) => string;
 type ClassNameFunction = (color?: string) => string[];
-type PropertyFunction = (color?: string) => Record<string, unknown> & { className?: never };
+type PropertyFunction = (color?: string) => RestrictedRecord;
 
 export type FlexibleMarkerOptions = {
   dictionary?: Dictionary;
@@ -210,11 +211,12 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       Object.entries(properties).forEach(([k, v]) => {
         if (
           (typeof v === "string" && v === "") ||
-          (Array.isArray(v) && (v as unknown[]).length === 0) ||
-          k === "className"
+          (Array.isArray(v) && (v as unknown[]).length === 0)
         ) {
           properties && (properties[k] = undefined);
         }
+
+        if (k === "className") delete properties?.["className"];
       });
     }
 
@@ -237,7 +239,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    * visits the Text nodes to match with the mark syntax (==marked text content==)
    *
    */
-  const visitorFirst: Visitor<Text> = function (node, index, parent): VisitorResult {
+  const visitorFirst: Visitor<Text, Parent> = function (node, index, parent): VisitorResult {
     /* istanbul ignore next */
     if (!parent || typeof index === "undefined") return;
 
@@ -297,7 +299,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    * if parent contains other content phrases
    *
    */
-  const visitorSecond: Visitor<Text> = function (node, index, parent): VisitorResult {
+  const visitorSecond: Visitor<Text, Parent> = function (node, index, parent): VisitorResult {
     /* istanbul ignore next */
     if (!parent || typeof index === "undefined") return;
 
@@ -386,7 +388,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    * visits the Text nodes to find empty markers (==== or == ==)
    *
    */
-  const visitorThird: Visitor<Text> = function (node, index, parent): VisitorResult {
+  const visitorThird: Visitor<Text, Parent> = function (node, index, parent): VisitorResult {
     /* istanbul ignore next */
     if (!parent || typeof index === "undefined") return;
 

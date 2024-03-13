@@ -1,6 +1,6 @@
 import dedent from "dedent";
 
-import { FlexibleMarkerOptions } from "../src";
+import { type FlexibleMarkerOptions } from "../src";
 import { process } from "./util/index";
 
 const options: FlexibleMarkerOptions = {
