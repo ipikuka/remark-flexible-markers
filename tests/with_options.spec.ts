@@ -1,6 +1,6 @@
 import dedent from "dedent";
 
-import { FlexibleMarkerOptions } from "../src";
+import { type FlexibleMarkerOptions } from "../src";
 import { process } from "./util/index";
 
 const options: FlexibleMarkerOptions = {
@@ -12,6 +12,7 @@ const options: FlexibleMarkerOptions = {
       ["data-color"]: color,
       dummy: "", // shouldn't be added
       empty: [], // shouldn't be added
+      className: undefined, // shouldn't be taken account
     };
   },
   equalityOperator: "=:=",

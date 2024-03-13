@@ -20,5 +20,6 @@ export const process = async (
   options?: FlexibleMarkerOptions,
 ): Promise<Value> => {
   const vFile = await compilerCreator(options).process(content);
+
   return vFile.value;
 };
