@@ -21,29 +21,31 @@ describe("within a markdown content", () => {
     `;
 
     expect(await process(input)).toMatchInlineSnapshot(`
-      "<h1>heading with <mark class="flexible-marker flexible-marker-default">marked</mark></h1>
+      "
+      <h1>heading with <mark class="flexible-marker flexible-marker-default">marked</mark></h1>
       <ul>
-      <li>List item</li>
-      <li>List item with <mark class="flexible-marker flexible-marker-default">marked</mark></li>
+        <li>List item</li>
+        <li>List item with <mark class="flexible-marker flexible-marker-default">marked</mark></li>
       </ul>
       <table>
-      <thead>
-      <tr>
-      <th>Abc</th>
-      <th>Xyz</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-      <td>normal</td>
-      <td><mark class="flexible-marker flexible-marker-default">marked</mark></td>
-      </tr>
-      </tbody>
+        <thead>
+          <tr>
+            <th>Abc</th>
+            <th>Xyz</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>normal</td>
+            <td><mark class="flexible-marker flexible-marker-default">marked</mark></td>
+          </tr>
+        </tbody>
       </table>
       <p>Here are <em><mark class="flexible-marker flexible-marker-default">italic marked</mark></em> and <strong><mark class="flexible-marker flexible-marker-default">bold marked</mark></strong></p>
       <blockquote>
-      <p>Here is <mark class="flexible-marker flexible-marker-default">marked</mark> in blockquote</p>
-      </blockquote>"
+        <p>Here is <mark class="flexible-marker flexible-marker-default">marked</mark> in blockquote</p>
+      </blockquote>
+      "
     `);
   });
 
@@ -58,9 +60,11 @@ describe("within a markdown content", () => {
     `;
 
     expect(await process(input)).toMatchInlineSnapshot(`
-      "<p>foo<mark class="flexible-marker flexible-marker-default"><strong>a==b</strong></mark>bar</p>
+      "
+      <p>foo<mark class="flexible-marker flexible-marker-default"><strong>a==b</strong></mark>bar</p>
       <p>foo <mark class="flexible-marker flexible-marker-default"><strong>a==b</strong></mark> bar</p>
-      <p><mark class="flexible-marker flexible-marker-default">foo <strong>a==b</strong> bar</mark></p>"
+      <p><mark class="flexible-marker flexible-marker-default">foo <strong>a==b</strong> bar</mark></p>
+      "
     `);
   });
 
@@ -73,8 +77,10 @@ describe("within a markdown content", () => {
     `;
 
     expect(await process(input)).toMatchInlineSnapshot(`
-      "<p>open<mark class="flexible-marker flexible-marker-default"><strong>strong <mark class="flexible-marker flexible-marker-default"><em>italik marker</em></mark> marker</strong></mark>close</p>
-      <p><mark class="flexible-marker flexible-marker-default">open<strong>strong <mark class="flexible-marker flexible-marker-default"><em>italik marker</em></mark> marker</strong>close</mark></p>"
+      "
+      <p>open<mark class="flexible-marker flexible-marker-default"><strong>strong <mark class="flexible-marker flexible-marker-default"><em>italik marker</em></mark> marker</strong></mark>close</p>
+      <p><mark class="flexible-marker flexible-marker-default">open<strong>strong <mark class="flexible-marker flexible-marker-default"><em>italik marker</em></mark> marker</strong>close</mark></p>
+      "
     `);
   });
 });
