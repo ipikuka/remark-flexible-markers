@@ -34,7 +34,7 @@ yarn add remark-flexible-markers
 
 ## Usage
 
-#### `==` sign around the content
+#### use `==` around the content
 
 ```markdown
 ==marked content==
@@ -43,7 +43,7 @@ yarn add remark-flexible-markers
 > [!IMPORTANT]
 > The `==` in the begining part of representation specifies there is NO `color` specification.
 
-#### `=[classification key]=` at the beginning side, `==` at the ending side
+#### use `=[classification key]=` at the beginning and `==` at the end
 
 ```markdown
 =r=marked content with red classification==
@@ -150,13 +150,15 @@ As of version `^1.2.0`, the `remark-flexible-markers` can handle also the syntax
 
 ## Options
 
-All options are **optional** and have **default values**.
+All options are **optional** and some of them have **default values**.
 
 ```typescript
+type RestrictedRecord = Record<string, unknown> & { className?: never };
+
 type Dictionary = Partial<Record<Key, string>>;
 type TagNameFunction = (color?: string) => string;
 type ClassNameFunction = (color?: string) => string[];
-type PropertyFunction = (color?: string) => Record<string, unknown> & { className?: never };
+type PropertyFunction = (color?: string) => RestrictedRecord
 
 use(remarkFlexibleMarkers, {
   dictionary?: Dictionary; // explained in the options section
@@ -216,11 +218,11 @@ const dictionary: Dictionary = {
 use(remarkFlexibleMarkers, {
   dictionary: {
     w: "wall"
-  };
+  },
 });
 ```
 
-Now, it is overriden for the only `w` key, and the color classification will be `wall` instead of default one `white`.
+Now, it is overriden for only `w` key, and the color classification will be `wall` instead of default one `white`.
 
 ```markdown
 =w=marked content==
@@ -240,7 +242,7 @@ By default, it is `mark` which is well known HTML element for highlighting the t
 
 ```javascript
 use(remarkFlexibleMarkers, {
-  markerTagName: "span";
+  markerTagName: "span",
 });
 ```
 
@@ -254,7 +256,7 @@ The option can take also a callback function, which has an optional argument `co
 
 ```javascript
 use(remarkFlexibleMarkers, {
-  markerTagName: (color) => color ?? "yellow";
+  markerTagName: (color) => color ?? "yellow",
 });
 ```
 
@@ -284,7 +286,7 @@ If a mark syntax in the document has no content, and would wanted to be an empty
 
 ```javascript
 use(remarkFlexibleMarkers, {
-  markerClassName: "remark-marker";
+  markerClassName: "remark-marker",
 });
 ```
 
@@ -308,7 +310,7 @@ The option can take also a callback function, which has an optional argument `co
 use(remarkFlexibleMarkers, {
   markerClassName: (color) => {
     return [`marker-${color ?? "yellow"}`]
-  };
+  },
 });
 ```
 
@@ -459,7 +461,7 @@ Here is ==marked content==
 
 Here is =r=marked content with r classification==
 
-Here are **==bold marked content==** and ==**bold marked content**==
+Here are **==marked bold content==** and ==**marked bold content**==
 
 ### ==marked content in headings==
 ```
@@ -484,11 +486,11 @@ is going to produce as default:
 <p>
   Here are 
   <strong>
-    <mark class="flexible-marker flexible-marker-default">bold marked content</mark>
+    <mark class="flexible-marker flexible-marker-default">marked bold content</mark>
   </strong>
    and 
   <mark class="flexible-marker flexible-marker-default">
-    <strong>bold marked content</strong>
+    <strong>marked bold content</strong>
   </mark>
 </p>
 <h3>
@@ -527,11 +529,11 @@ is going to produce:
 <p>
   Here are 
   <strong>
-    <span class="custom-marker custom-marker-default">bold marked content</span>
+    <span class="custom-marker custom-marker-default">marked bold content</span>
   </strong>
    and 
   <span class="custom-marker custom-marker-default">
-    <strong>bold marked content</strong>
+    <strong>marked bold content</strong>
   </span>
 </p>
 <h3>
@@ -548,7 +550,7 @@ This plugin only modifies the mdast (markdown abstract syntax tree) as explained
 
 ## Types
 
-This package is fully typed with [TypeScript][typeScript]. The plugin options' type is exported as `FlexibleMarkerOptions`.
+This package is fully typed with [TypeScript][typescript]. The plugin options' type is exported as `FlexibleMarkerOptions`.
 
 ## Compatibility
 
