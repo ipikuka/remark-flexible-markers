@@ -186,8 +186,6 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
     classification: Key | undefined,
     children: PhrasingContent[],
   ): Mark => {
-    let properties: Record<string, unknown> | undefined;
-
     const color = classification ? settings.dictionary[classification] : undefined;
 
     const markerTagName =
@@ -204,6 +202,8 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
             color && `${settings.markerClassName}-${color}`,
             !children.length && `${settings.markerClassName}-empty`,
           ]);
+
+    let properties: Record<string, unknown> | undefined;
 
     if (settings.markerProperties) {
       properties = settings.markerProperties(color);
@@ -257,7 +257,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       const match = matches[index];
 
       const [matched, classification, markedText] = match;
-      const mIndex = match.index!;
+      const mIndex = match.index;
       const mLength = matched.length;
 
       // could be a text part before each matched part
@@ -330,7 +330,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     const [matched, classification] = match;
     const mLength = matched.length;
-    const mIndex = match.index!;
+    const mIndex = match.index;
 
     // if there is a text part before
     if (mIndex > 0) {
@@ -357,7 +357,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
 
     const [matched_] = match_;
     const mLength_ = matched_.length;
-    const mIndex_ = match_.index!;
+    const mIndex_ = match_.index;
 
     // if there is a text part before
     if (mIndex_ > 0) {
@@ -415,7 +415,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       const match = matches[index];
 
       const [matched, classification] = match;
-      const mIndex = match.index!;
+      const mIndex = match.index;
       const mLength = matched.length;
 
       // could be a text part before each matched part
