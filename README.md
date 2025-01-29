@@ -577,7 +577,7 @@ I like to contribute the Unified / Remark / MDX ecosystem, so I recommend you to
 - [`remark-flexible-markers`](https://www.npmjs.com/package/remark-flexible-markers)
   – Remark plugin to add custom `mark` element with customizable properties in markdown
 - [`remark-flexible-toc`](https://www.npmjs.com/package/remark-flexible-toc)
-  – Remark plugin to expose the table of contents via Vfile.data or via an option reference
+  – Remark plugin to expose the table of contents via `vfile.data` or via an option reference
 - [`remark-mdx-remove-esm`](https://www.npmjs.com/package/remark-mdx-remove-esm)
   – Remark plugin to remove import and/or export statements (mdxjsEsm)
 

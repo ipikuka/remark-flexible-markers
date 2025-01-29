@@ -6,7 +6,7 @@ import rehypeFormat from "rehype-format";
 import rehypeStringify from "rehype-stringify";
 import type { VFileCompatible, Value } from "vfile";
 
-import plugin, { FlexibleMarkerOptions } from "../../src";
+import plugin, { type FlexibleMarkerOptions } from "../../src";
 
 const compilerCreator = (options?: FlexibleMarkerOptions) =>
   unified()
