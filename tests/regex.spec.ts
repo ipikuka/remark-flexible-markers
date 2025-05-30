@@ -1,3 +1,5 @@
+import { describe, it, expect } from "vitest";
+
 import { REGEX } from "../src/index";
 
 type Fixture = {
