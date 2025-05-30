@@ -8,12 +8,11 @@ import { findAllAfter } from "unist-util-find-all-after";
 import { findAfter } from "unist-util-find-after";
 import { u } from "unist-builder";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type PartiallyRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface MarkData extends Data {}
 
 interface Mark extends Parent {
@@ -213,7 +212,9 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
           (typeof v === "string" && v === "") ||
           (Array.isArray(v) && (v as unknown[]).length === 0)
         ) {
-          properties && (properties[k] = undefined);
+          if (properties) {
+            properties[k] = undefined;
+          }
         }
 
         if (k === "className") delete properties?.["className"];
