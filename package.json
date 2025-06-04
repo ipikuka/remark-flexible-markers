@@ -33,12 +33,13 @@
     "unified",
     "mdast",
     "markdown",
+    "MDX",
     "remark",
     "plugin",
-    "remark-plugin",
-    "remark-marker",
-    "remark-markers",
-    "remark-flexible-markers"
+    "remark plugin",
+    "remark marker",
+    "remark markers",
+    "remark flexible markers"
   ],
   "author": "ipikuka <talatkuyuk@gmail.com>",
   "license": "MIT",
