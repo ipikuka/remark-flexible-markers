@@ -202,24 +202,18 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
             !children.length && `${settings.markerClassName}-empty`,
           ]);
 
-    let properties: Record<string, unknown> | undefined;
+    const properties = settings.markerProperties?.(color) ?? {};
 
-    if (settings.markerProperties) {
-      properties = settings.markerProperties(color);
+    Object.entries(properties).forEach(([k, v]) => {
+      if (
+        (typeof v === "string" && v === "") ||
+        (Array.isArray(v) && (v as unknown[]).length === 0)
+      ) {
+        properties[k] = undefined;
+      }
 
-      Object.entries(properties).forEach(([k, v]) => {
-        if (
-          (typeof v === "string" && v === "") ||
-          (Array.isArray(v) && (v as unknown[]).length === 0)
-        ) {
-          if (properties) {
-            properties[k] = undefined;
-          }
-        }
-
-        if (k === "className") delete properties?.["className"];
-      });
-    }
+      if (k === "className") delete properties?.["className"];
+    });
 
     // https://github.com/syntax-tree/mdast-util-to-hast#example-supporting-custom-nodes
     return {
@@ -291,7 +285,9 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       children.push(textNode);
     }
 
-    if (children.length) parent.children.splice(index, 1, ...children);
+    if (children.length) {
+      parent.children.splice(index, 1, ...children);
+    }
   };
 
   /**
@@ -448,7 +444,9 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       children.push(textNode);
     }
 
-    if (children.length) parent.children.splice(index, 1, ...children);
+    if (children.length) {
+      parent.children.splice(index, 1, ...children);
+    }
   };
 
   const transformer: Transformer<Root> = (tree) => {
