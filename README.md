@@ -25,7 +25,7 @@ This package is a [**unified**][unified] ([**remark**][remark]) plugin **to add 
 
 ## When should I use this?
 
-This plugin is useful if you want to **add a custom `<mark>` element** in markdown for providing marked or highlighted text, _with custom tag name, custom class name, custom color classification, and also additional properties_. **You can easily create `<mark>` element with the `remark-flexible-markers`.**
+**`remark-flexible-markers`** is useful if you want to **add a custom `<mark>` element** in markdown for providing marked or highlighted text, _with custom tag name, custom class name, custom color classification, and also additional properties_. **You can easily create `<mark>` element with `remark-flexible-markers`.**
 
 ## Installation
 
@@ -101,7 +101,7 @@ Now, running `node example.js` yields:
 </p>
 ```
 
-Without `remark-flexible-markers`, you’d get:
+Without **`remark-flexible-markers`**, you’d get:
 
 ```html
 <p>==marked content==
@@ -129,7 +129,7 @@ Here are some bad usage, and will not work.
 
 ## It is more flexible and powerful
 
-As of version `^1.2.0`, the `remark-flexible-markers` can handle also the syntax containing other markdown phrases like `strong`, `emphasis`, `link` etc. For example:
+As of version `^1.2.0`, **`remark-flexible-markers`** can handle also the syntax containing other markdown phrases like `strong`, `emphasis`, `link` etc. For example:
 
 ```
 ==**marked bold content**==
@@ -444,7 +444,7 @@ will produce:
 <p>, , , </p>
 ```
 
-##### **`mark`** will crate an empty `<mark>` node.
+##### **`mark`** will create an empty `<mark>` node.
 
 ```javascript
 use(remarkFlexibleMarkers, {
@@ -567,7 +567,7 @@ This plugin works with `unified` version 6+ and `remark` version 7+. It is compa
 
 ## Security
 
-Use of `remark-flexible-markers` does not involve rehype (hast) or user content so there are no openings for cross-site scripting (XSS) attacks.
+Use of **`remark-flexible-markers`** does not involve rehype (hast) or user content so there are no openings for cross-site scripting (XSS) attacks.
 
 ## My Plugins
 
