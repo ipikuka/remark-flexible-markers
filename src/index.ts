@@ -235,7 +235,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorFirst: Visitor<Text, Parent> = function (node, index, parent): VisitorResult {
-    /* v8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!parent || typeof index === "undefined") return;
 
     if (!REGEX.test(node.value)) return;
@@ -285,6 +285,8 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       children.push(textNode);
     }
 
+    // classic V8 coverage false negative
+    /* v8 ignore next -- @preserve */
     if (children.length) {
       parent.children.splice(index, 1, ...children);
     }
@@ -297,7 +299,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorSecond: Visitor<Text, Parent> = function (node, index, parent): VisitorResult {
-    /* v8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!parent || typeof index === "undefined") return;
 
     // control if the Text node matches with "starting mark regex"
@@ -386,7 +388,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
    *
    */
   const visitorThird: Visitor<Text, Parent> = function (node, index, parent): VisitorResult {
-    /* v8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!parent || typeof index === "undefined") return;
 
     if (!REGEX_EMPTY.test(node.value)) return;
@@ -444,6 +446,8 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
       children.push(textNode);
     }
 
+    // classic V8 coverage false negative
+    /* v8 ignore next -- @preserve */
     if (children.length) {
       parent.children.splice(index, 1, ...children);
     }
