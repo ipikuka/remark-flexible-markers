@@ -113,6 +113,8 @@ describe("remark-flexigraph regex tests", () => {
       },
     ];
 
+    /* eslint-disable vitest/no-conditional-expect */
+
     fixtures.forEach((fixture) => {
       // console.log(fixture.input);
 
@@ -125,12 +127,14 @@ describe("remark-flexigraph regex tests", () => {
       }
 
       if (match) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [_, classification, markedText] = match;
+        const classification = match[1];
+        const markedText = match[2];
 
         expect(classification).toBe(fixture.expect?.classification);
         expect(markedText).toBe(fixture.expect?.markedText);
       }
     });
+
+    /* eslint-enable vitest/no-conditional-expect */
   });
 });
