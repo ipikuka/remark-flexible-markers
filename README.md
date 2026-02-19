@@ -1,10 +1,15 @@
+**A robust Next.js newsletter `Next.js Weekly` is sponsoring me** 💖
+[![NextjsWeekly banner](./assets/next-js-weekly.png)](https://nextjsweekly.com/)
 
 ### [Become a sponsor](https://github.com/sponsors/ipikuka) 🚀
 
 If you find **`remark-flexible-markers`** useful in your projects, consider supporting my work.  
 Your sponsorship means a lot 💖
 
-Be the **first sponsor** and get featured here and on [my sponsor wall](https://github.com/sponsors/ipikuka).  
+My sponsors are going to be featured here and on [my sponsor wall](https://github.com/sponsors/ipikuka).
+
+A warm thanks 🙌 to [@ErfanEbrahimnia](https://github.com/ErfanEbrahimnia), [@recepkyk](https://github.com/recepkyk), and [@LSeaburg](https://github.com/LSeaburg) for the support!
+
 Thank you for supporting open source! 🙌
 
 # remark-flexible-markers
