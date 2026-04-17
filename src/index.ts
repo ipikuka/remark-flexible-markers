@@ -2,7 +2,7 @@ import { CONTINUE, SKIP, visit } from "unist-util-visit";
 import type { Visitor, VisitorResult } from "unist-util-visit";
 import type { Plugin, Transformer } from "unified";
 import type { Data, Parent, PhrasingContent, Root, Text } from "mdast";
-import { findAllBetween } from "unist-util-find-between-all";
+import { findBetween } from "unist-util-find-between";
 import { findAllBefore } from "unist-util-find-all-before";
 import { findAllAfter } from "unist-util-find-all-after";
 import { findAfter } from "unist-util-find-after";
@@ -317,7 +317,7 @@ const plugin: Plugin<[FlexibleMarkerOptions?], Root> = (options) => {
     // now, ensured that the parent has a mark element between opening Text node and closing Text nodes
 
     const beforeChildren = findAllBefore(parent, openingNode) as PhrasingContent[];
-    const markChildren = findAllBetween(parent, openingNode, closingNode) as PhrasingContent[];
+    const markChildren = findBetween(parent, openingNode, closingNode) as PhrasingContent[];
     const afterChildren = findAllAfter(parent, closingNode) as PhrasingContent[];
 
     /********************* OPENING NODE ***********************/
