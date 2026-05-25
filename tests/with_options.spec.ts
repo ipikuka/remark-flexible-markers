@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import dedent from "dedent";
 
-import { type FlexibleMarkerOptions } from "../src";
-import { process } from "./util/index";
+import { type FlexibleMarkerOptions } from "../src/index.js";
+import { process } from "./util/index.js";
 
 const options: FlexibleMarkerOptions = {
   dictionary: { b: "brother" },
