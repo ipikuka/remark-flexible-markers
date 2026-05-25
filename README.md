@@ -167,12 +167,13 @@ As of version `^1.2.0`, **`remark-flexible-markers`** can handle also the syntax
 All options are **optional** and some of them have **default values**.
 
 ```typescript
-type RestrictedRecord = Record<string, unknown> & { className?: never };
+interface Properties {
+    [PropertyName: string]: boolean | number | string | null | undefined | Array<string | number>;
+}
 
-type Dictionary = Partial<Record<Key, string>>;
 type TagNameFunction = (color?: string) => string;
 type ClassNameFunction = (color?: string) => string[];
-type PropertyFunction = (color?: string) => RestrictedRecord
+type PropertyFunction = (color?: string) => Omit<Properties, 'className'> & { className?: never };
 
 use(remarkFlexibleMarkers, {
   dictionary?: Dictionary; // explained in the options section

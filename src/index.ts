@@ -100,10 +100,14 @@ const dictionary: Dictionary = {
   z: "black",
 };
 
-type RestrictedRecord = Record<string, unknown> & { className?: never };
+// from "hast", but I want to avoid importing that whole package just for this type
+interface Properties {
+    [PropertyName: string]: boolean | number | string | null | undefined | Array<string | number>;
+}
+
 type TagNameFunction = (color?: string) => string;
 type ClassNameFunction = (color?: string) => string[];
-type PropertyFunction = (color?: string) => RestrictedRecord;
+type PropertyFunction = (color?: string) => Omit<Properties, 'className'> & { className?: never };
 
 export type FlexibleMarkerOptions = {
   dictionary?: Dictionary;
